@@ -1,0 +1,39 @@
+* {
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
+}
+
+html {
+    height: calc(100% - 10px);
+    width: calc(100% - 10px);
+    margin: 5px;
+}
+
+body {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+}
+
+#status_msg, #dashboard_tab, #live_tab, #statistics_tab, #account_tab {
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+}
+
+#tabs {
+    display: flex;
+    flex-flow: row;
+}
+
+#dashboard_tab, #live_tab, #statistics_tab, #account_tab {
+    flex-grow: 1;
+    background-color: antiquewhite;
+}
+
+#tab_content {
+    flex-grow: 1;
+}
