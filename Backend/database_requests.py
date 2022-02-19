@@ -1,4 +1,4 @@
-from sqlite3 import connect
+from sqlite3 import connect,IntegrityError
 
 DB_PATH = "database.db"
 
@@ -39,10 +39,11 @@ def create_user(username, password):
         db_connection.execute("INSERT INTO users VALUES (?,?);",user)
         db_connection.execute("COMMIT;")
         _close_connection(db_connection)
-        return True
-    except Exception as e:
-        print(e)
-        return False
+        return (True,None)
+    except IntegrityError:
+        return (True,None)
+    except:
+        return (False,None)
 
 def create_login(username, token, issued_timestamp):
     login = (token,username,issued_timestamp)
@@ -81,5 +82,18 @@ def select_password(username):
         if password is None:
             return (True,None)
         return (True,password[0])
+    except:
+        return (False,None)
+
+def select_users():
+    try:
+        db_connection = _open_connection()
+        db_connection.execute("SELECT * FROM users;")
+        users = db_connection.fetchall()
+        _close_connection(db_connection)
+        print(users)
+        if users is None:
+            return (True,None)
+        return (True,users)
     except:
         return (False,None)
