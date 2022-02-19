@@ -18,7 +18,7 @@ body {
     width: 100%;
 }
 
-#status_msg, #dashboard_tab, #live_tab, #statistics_tab, #account_tab {
+#status_msg, #dashboard_tab, #statistics_tab, #signin_tab, #signup_tab {
     border-style: solid;
     padding: 5px;
     margin: 5px;
@@ -29,7 +29,7 @@ body {
     flex-flow: row;
 }
 
-#dashboard_tab, #live_tab, #statistics_tab, #account_tab {
+#dashboard_tab, #statistics_tab, #signin_tab, #signup_tab {
     flex-grow: 1;
     background-color: antiquewhite;
 }
