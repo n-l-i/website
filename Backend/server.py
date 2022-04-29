@@ -21,8 +21,8 @@ def get_tab():
     tab = request.get_json().get("tab")
     try:
         with open(f"Frontend/{tab}/{tab}.html", 'r') as file:
-            data = file.read().replace('\n', '')
-        return {"success":True,"message":None,"data":data},200
+            html = file.read().replace('\n', '')
+        return {"success":True,"message":None,"data":html},200
     except:
         return {"success":False,"message":None},500
 
@@ -49,9 +49,11 @@ def sign_in():
 @app.route("/sign_up", methods = ["POST"])
 def sign_up():
     init_db()
-    username = str(request.get_json().get("username"))
-    password = str(request.get_json().get("password"))
-    if username is None or password is None:
+    username = request.get_json().get("username")
+    password = request.get_json().get("password")
+    if username is None or type(username) != str or len(username) == 0:
+        return {"success": False, "message":"Both email and password need to be provided."},400
+    if password is None or type(password) != str or len(password) == 0:
         return {"success": False, "message":"Both email and password need to be provided."},400
     successful,_ = create_user(username, password)
     if not successful:
