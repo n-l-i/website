@@ -1,6 +1,6 @@
 from sqlite3 import connect,IntegrityError
 
-DB_PATH = "database.db"
+DB_PATH = "Backend/database.db"
 
 def _open_connection():
     db_connection = connect(DB_PATH)

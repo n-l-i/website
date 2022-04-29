@@ -2,6 +2,7 @@ from flask import Flask, request, send_file
 from flask_cors import CORS
 from time import sleep
 from database_requests import create_login,create_user,select_password,select_users,init_db
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -9,17 +10,17 @@ CORS(app)
 @app.route("/", methods = ["GET"])
 def hello():
     init_db()
-    return "Hello!"
+    return send_file("../Frontend/index.html")
 
-@app.route("/js", methods = ["GET"])
-def send_js():
-    return send_file("../Frontend/index.js")
+@app.route("/get_file/<path:file_path>", methods = ["GET"])
+def get_file(file_path):
+    return send_file(f"../{file_path}")
 
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
     tab = request.get_json().get("tab")
     try:
-        with open(f"../Frontend/{tab}/{tab}.html", 'r') as file:
+        with open(f"Frontend/{tab}/{tab}.html", 'r') as file:
             data = file.read().replace('\n', '')
         return {"success":True,"message":None,"data":data},200
     except:
