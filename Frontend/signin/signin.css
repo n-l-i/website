@@ -3,27 +3,32 @@
 }
 
 #tab_area {
+    min-height: 0px;
+    flex-shrink: 1;
     display: flex;
     flex-flow: column;
     height: 100%;
     width: 100%;
 }
 
-#input_area, #results, #debug {
+#input_area, #sent, #received {
+    flex-shrink: 0;
     border-style: solid;
     padding: 5px;
     margin: 5px;
     background-color: lightskyblue;
 }
 
-#main_content {
+#debug {
+    min-height: 0px;
     flex-grow: 1;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
-#results, #debug {
-    min-width: 100px;
+#sent, #received {
     flex-grow: 1;
+    min-width: 100px;
+    overflow: scroll;
 }
