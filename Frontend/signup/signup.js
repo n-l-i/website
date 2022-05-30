@@ -20,9 +20,6 @@ function load_sign_up(response){
 }
 
 function list_signups(){
-    if (document.getElementById("signup_log") == null) {
-        return;
-    }
     if (arguments.length == 0){
         make_http_request("GET", 'http://localhost:5000/signups', {}, list_signups);
         return;

@@ -1,15 +1,13 @@
 window.onload = function(){
   document.getElementById("status_msg").innerHTML = "loaded page";
   open_tab("signin");
-  setInterval(add_dashboard_data,1000);
-  setInterval(list_signups,1000);
 }
 
 function open_tab(tab_name){
     make_http_request("POST", 'http://localhost:5000/get_tab', {"tab":tab_name}, load_tab);
 
-    if (tab_name === "statistics") {
-        get_statistics_data();
+    if (tab_name === "signup") {
+        list_signups();
     }
 }
 

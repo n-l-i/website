@@ -3,11 +3,11 @@ function sign_in() {
     password = document.getElementById("password_input").value
     make_http_request('POST', 'http://localhost:5000/sign_in', {"username":email,"password":password}, load_sign_in)
     
-    document.getElementById("debug").innerHTML += "<br>"+request_body;
+    document.getElementById("sent").innerHTML += "<br>"+request_body;
 }
 
 function load_sign_in(response){
-    document.getElementById("results").innerHTML += "<br>"+JSON.stringify(response);
+    document.getElementById("received").innerHTML += "<br>"+JSON.stringify(response);
     if (response.status_code !== 200) {
         document.getElementById("status_msg").innerHTML = "request failed";
         return;
