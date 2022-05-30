@@ -1,11 +1,9 @@
 from flask import Flask, request, send_file
-from flask_cors import CORS
 from time import sleep
 from database_requests import create_login,create_user,select_password,select_users,init_db
 import os
 
 app = Flask(__name__)
-CORS(app)
 
 @app.route("/", methods = ["GET"])
 def hello():
@@ -59,6 +57,14 @@ def sign_up():
     if not successful:
         return "{}", 500
     return {"success": True, "message": "Successfully signed up."},200
+
+@app.route("/signups", methods = ["GET"])
+def signups():
+    init_db()
+    successful,users = select_users()
+    if not successful:
+        return "{}", 500
+    return {"success": True, "message": "Retrieved users.","data":users},200
 
 def create_token():
     return "hej"

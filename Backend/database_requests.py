@@ -91,7 +91,6 @@ def select_users():
         db_connection.execute("SELECT * FROM users;")
         users = db_connection.fetchall()
         _close_connection(db_connection)
-        print(users)
         if users is None:
             return (True,None)
         return (True,users)

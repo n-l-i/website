@@ -19,21 +19,25 @@ body {
 }
 
 #status_msg, #dashboard_tab, #statistics_tab, #signin_tab, #signup_tab {
+    flex-shrink: 0;
     border-style: solid;
     padding: 5px;
     margin: 5px;
 }
 
 #tabs {
+    flex-shrink: 0;
     display: flex;
     flex-flow: row;
 }
 
 #dashboard_tab, #statistics_tab, #signin_tab, #signup_tab {
+    flex-shrink: 0;
     flex-grow: 1;
     background-color: antiquewhite;
 }
 
 #tab_content {
+    flex-shrink: 0;
     flex-grow: 1;
 }
