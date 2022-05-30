@@ -2,6 +2,7 @@ window.onload = function(){
   document.getElementById("status_msg").innerHTML = "loaded page";
   open_tab("signin");
   setInterval(add_dashboard_data,1000);
+  setInterval(list_signups,1000);
 }
 
 function open_tab(tab_name){
