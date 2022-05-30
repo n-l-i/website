@@ -16,5 +16,7 @@ function load_sign_in(response){
         document.getElementById("status_msg").innerHTML = "login failed";
         return;
     }
-    document.getElementById("status_msg").innerHTML = "login successful, token = "+response.data;
+    localStorage.setItem("token",response.data);
+    document.getElementById("status_msg").innerHTML = "login successful";
+    window.location.reload();
 }

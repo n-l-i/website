@@ -73,6 +73,18 @@ def log_out_user(token):
     except:
         return False
 
+def is_valid_token(token):
+    try:
+        db_connection = _open_connection()
+        db_connection.execute("SELECT token FROM logins WHERE token = \""+token+"\";")
+        valid_tokens = db_connection.fetchone()
+        _close_connection(db_connection)
+        if valid_tokens is None:
+            return (True,False)
+        return (True,True)
+    except:
+        return (False,False)
+
 def select_password(username):
     try:
         db_connection = _open_connection()

@@ -1,7 +1,7 @@
 from flask import Flask, request, send_file
-from time import sleep
-from database_requests import create_login,create_user,select_password,select_users,init_db
-import os
+from time import time,sleep
+from database_requests import create_login,is_valid_token,create_user,select_password,select_users,init_db
+from random import randint
 
 app = Flask(__name__)
 
@@ -17,8 +17,14 @@ def get_file(file_path):
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
     tab = request.get_json().get("tab")
+    if tab == "about":
+        tab_adress = f"Frontend/{tab}/{tab}.html"
+    elif tab in ("signin","signup"):
+        tab_adress = f"Frontend/unlocked/{tab}/{tab}.html"
+    else:
+        tab_adress = f"Frontend/locked/{tab}/{tab}.html"
     try:
-        with open(f"Frontend/{tab}/{tab}.html", 'r') as file:
+        with open(tab_adress, 'r') as file:
             html = file.read().replace('\n', '')
         return {"success":True,"message":None,"data":html},200
     except:
@@ -26,9 +32,6 @@ def get_tab():
 
 @app.route("/sign_in", methods = ["POST"])
 def sign_in():
-    init_db()
-    create_user("email@domain.com", "p4ssw0rd")
-    create_user("cooling@outlock.com", "Pass123")
     username = str(request.get_json().get("username"))
     password = str(request.get_json().get("password"))
     if username is None or password is None:
@@ -39,10 +42,18 @@ def sign_in():
     if old_password is None or password != old_password:
         return {"success": False, "message": "Wrong username or password."},200;
     token = create_token()
-    success,_ = create_login(username, token,2)
+    success,_ = create_login(username, token,int(time()))
     if not success:
         return "{}", 500
     return {"success": True, "message": "Successfully signed in.", "data": token},200
+
+@app.route("/is_signed_in", methods = ["POST"])
+def is_signed_in():
+    token = str(request.get_json().get("token"))
+    success,is_valid = is_valid_token(token)
+    if not success:
+        return "{}", 500
+    return {"success": is_valid, "message": "Successfully retrieved data."},200
 
 @app.route("/sign_up", methods = ["POST"])
 def sign_up():
@@ -56,6 +67,7 @@ def sign_up():
     successful,_ = create_user(username, password)
     if not successful:
         return "{}", 500
+    socketio.emit("sign_up",{"username":username,"password":password})
     return {"success": True, "message": "Successfully signed up."},200
 
 @app.route("/signups", methods = ["GET"])
@@ -64,10 +76,13 @@ def signups():
     successful,users = select_users()
     if not successful:
         return "{}", 500
-    return {"success": True, "message": "Retrieved users.","data":users},200
+    return {"success": True, "message": "Successfully retrieved data.","data":users},200
 
 def create_token():
-    return "hej"
+    token = ""
+    for i in range(10):
+        token += str(randint(0,9))
+    return token
 
 @app.route("/get_users", methods = ["GET"])
 def get_users():
