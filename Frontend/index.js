@@ -1,18 +1,34 @@
 window.onload = function(){
-  document.getElementById("status_msg").innerHTML = "loaded page";
-  open_tab("signin");
+    let token = localStorage.getItem("token");
+    make_http_request("POST", 'http://localhost:5000/is_signed_in', {"token":token}, open_start_tab);
 }
 
-function open_tab(tab_name){
-    make_http_request("POST", 'http://localhost:5000/get_tab', {"tab":tab_name}, load_tab);
-
-    if (tab_name === "signup") {
-        list_signups();
+function open_start_tab(response){
+    if (response.status_code !== 200 || response.success !== true) {
+        replace_html("http://localhost:5000/get_file/Frontend/unlocked/");
+        return;
     }
+    replace_html("http://localhost:5000/get_file/Frontend/locked/");
 }
 
-function load_tab(response){
-  document.getElementById("tab_content").innerHTML = response.data;
+function replace_html(url){
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET", url+"index.html", true);
+
+    xmlhttp.onload = function () {
+        let html = xmlhttp.response;
+        document.getElementsByTagName("html")[0].innerHTML = html;
+        var newScript = document.createElement("script");
+        newScript.src = url+"index.js";
+        document.head.appendChild(newScript);
+    };
+    xmlhttp.timeout = 300000;
+    xmlhttp.ontimeout = function (e) {
+        return;
+    };
+
+    xmlhttp.setRequestHeader('Content-type', 'application/json')
+    xmlhttp.send();
 }
 
 function make_http_request(method,url,data,onload){
