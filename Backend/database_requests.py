@@ -1,6 +1,10 @@
 from sqlite3 import connect,IntegrityError
+from time import time
 
+# Location of database file
 DB_PATH = "Backend/database.db"
+# Sign in tokens are valid for 30 minutes
+TOKEN_VALIDITY_PERIOD = 60*30
 
 def _open_connection():
     db_connection = connect(DB_PATH)
@@ -45,7 +49,8 @@ def create_user(username, password):
     except:
         return (False,None)
 
-def create_login(username, token, issued_timestamp):
+def create_login(username, token):
+    issued_timestamp = int(time())
     login = (token,username,issued_timestamp)
     try:
         db_connection = _open_connection()
@@ -57,38 +62,53 @@ def create_login(username, token, issued_timestamp):
     except:
         return (False,None)
 
-def log_out_user(token):
+def delete_token(token):
     try:
         db_connection = _open_connection()
-        try:
-            result = [results for results in db_connection.execute("SELECT * FROM logins WHERE token = "+token+";")]
-            return result
-        except:
-            return False
-            db_connection.execute("BEGIN;")
-            db_connection.execute("DELETE FROM logins WHERE token = "+token+";")
-            db_connection.execute("COMMIT;")
-            _close_connection(db_connection)
-            return True
+        db_connection.execute("BEGIN;")
+        db_connection.execute("DELETE FROM logins WHERE token = ?;",[token])
+        db_connection.execute("COMMIT;")
+        _close_connection(db_connection)
+        return True
+    except:
+        return False
+
+def update_token(token):
+    try:
+        current_time = int(time())
+        db_connection = _open_connection()
+        db_connection.execute("BEGIN;")
+        db_connection.execute("UPDATE logins SET issued_timestamp = ? WHERE token = ?;",[current_time,token])
+        db_connection.execute("COMMIT;")
+        _close_connection(db_connection)
+        return True
     except:
         return False
 
 def is_valid_token(token):
     try:
+        current_time = int(time())
         db_connection = _open_connection()
-        db_connection.execute("SELECT token FROM logins WHERE token = \""+token+"\";")
-        valid_tokens = db_connection.fetchone()
+        db_connection.execute("SELECT issued_timestamp FROM logins WHERE token = ?;",[token])
+        valid_token = db_connection.fetchone()
         _close_connection(db_connection)
-        if valid_tokens is None:
+        if valid_token is None:
             return (True,False)
-        return (True,True)
+        issued_timestamp = valid_token[0]
+        if current_time < issued_timestamp:
+            return (False,False)
+        if current_time - issued_timestamp > TOKEN_VALIDITY_PERIOD:
+            success = delete_token(token)
+            return (success,False)
+        success = update_token(token)
+        return (success,True)
     except:
         return (False,False)
 
 def select_password(username):
     try:
         db_connection = _open_connection()
-        db_connection.execute("SELECT password FROM users WHERE username = \""+username+"\";")
+        db_connection.execute("SELECT password FROM users WHERE username = ?;",[username])
         password = db_connection.fetchone()
         _close_connection(db_connection)
         if password is None:
