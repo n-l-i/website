@@ -1,5 +1,5 @@
 from flask import Flask, request, send_file
-from time import time,sleep
+from time import sleep
 from database_requests import create_login,is_valid_token,create_user,select_password,select_users,init_db
 from random import randint
 
@@ -42,7 +42,7 @@ def sign_in():
     if old_password is None or password != old_password:
         return {"success": False, "message": "Wrong username or password."},200;
     token = create_token()
-    success,_ = create_login(username, token,int(time()))
+    success,_ = create_login(username, token)
     if not success:
         return "{}", 500
     return {"success": True, "message": "Successfully signed in.", "data": token},200
