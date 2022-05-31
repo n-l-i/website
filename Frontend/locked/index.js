@@ -2,13 +2,22 @@ load_window();
 
 function load_window(){
     var newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/locked/dashboard/dashboard.js";
+    newScript.src = "http://localhost:5000/get_file/Frontend/locked/home/home.js";
+    document.head.appendChild(newScript);
+    newScript = document.createElement("script");
+    newScript.src = "http://localhost:5000/get_file/Frontend/locked/chess_ai/chess_ai.js";
+    document.head.appendChild(newScript);
+    newScript = document.createElement("script");
+    newScript.src = "http://localhost:5000/get_file/Frontend/locked/network_simulator/network_simulator.js";
+    document.head.appendChild(newScript);
+    newScript = document.createElement("script");
+    newScript.src = "http://localhost:5000/get_file/Frontend/locked/ssl_certs/ssl_certs.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
     newScript.src = "http://localhost:5000/get_file/Frontend/about/about.js";
     document.head.appendChild(newScript);
     document.getElementById("status_msg").innerHTML = "loaded page";
-    open_tab("dashboard");
+    open_tab("home");
 }
 
 function open_tab(tab_name){

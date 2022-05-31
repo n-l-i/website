@@ -18,7 +18,7 @@ body {
     overflow: hidden;
 }
 
-#status_msg, #about_tab, #dashboard_tab {
+#status_msg {
     flex-shrink: 0;
     border-style: solid;
     padding: 5px;
@@ -31,10 +31,18 @@ body {
     flex-flow: row;
 }
 
-#about_tab, #dashboard_tab {
-    flex-shrink: 0;
+#about_tab, #home_tab, #ssl_certs_tab, #chess_ai_tab, #network_simulator_tab {
     flex-grow: 1;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    min-width: 0px;
+    overflow: hidden;
     background-color: antiquewhite;
+}
+
+#about_tab, #home_tab {
+    flex-shrink: 0;
 }
 
 #tab_content {
