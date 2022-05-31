@@ -1,4 +1,4 @@
-#dashboard_tab {
+#network_simulator_tab {
     background-color: lightcoral;
 }
 
@@ -8,7 +8,7 @@
     width: 100%;
 }
 
-#dashboard {
+#network_simulator {
     flex-grow: 1;
     border-style: solid;
     padding: 5px;
