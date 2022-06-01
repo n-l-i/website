@@ -1,0 +1,28 @@
+#chess_ai_tab {
+    background-color: lightcoral;
+}
+
+#tab_area {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+#input_area {
+    flex-shrink: 0;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightskyblue;
+}
+
+#chess_ai {
+    flex-grow: 1;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightskyblue;
+    font-family:monospace;
+    overflow: scroll;
+}
