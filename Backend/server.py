@@ -1,14 +1,22 @@
 from flask import Flask, request, send_file
-from time import sleep
-from database_requests import create_login,is_valid_token,create_user,select_password,select_users,init_db
-from random import randint
+from ..Frontend.Login_pages.server_interface import (
+    get_tab as _get_tab,
+    sign_in as _sign_in,
+    is_signed_in as _is_signed_in,
+    sign_up as _sign_up,
+    signups as _signups,
+    get_users as _get_users
+)
+from ..Frontend.Content_pages.chess_ai.server_interface import (
+    select_colour as _select_colour,
+    make_move as _make_move
+)
 
 app = Flask(__name__)
 
 @app.route("/", methods = ["GET"])
 def hello():
-    init_db()
-    return send_file("../Frontend/index.html")
+    return send_file("../Frontend/Landing_page/index.html")
 
 @app.route("/get_file/<path:file_path>", methods = ["GET"])
 def get_file(file_path):
@@ -16,79 +24,42 @@ def get_file(file_path):
 
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
-    tab = request.get_json().get("tab")
-    if tab == "about":
-        tab_adress = f"Frontend/{tab}/{tab}.html"
-    elif tab in ("signin","signup"):
-        tab_adress = f"Frontend/unlocked/{tab}/{tab}.html"
-    else:
-        tab_adress = f"Frontend/locked/{tab}/{tab}.html"
-    try:
-        with open(tab_adress, 'r') as file:
-            html = file.read().replace('\n', '')
-        return {"success":True,"message":None,"data":html},200
-    except:
-        return {"success":False,"message":None},500
+    tab = str(request.get_json().get("tab"))
+    return _get_tab(tab)
 
 @app.route("/sign_in", methods = ["POST"])
 def sign_in():
     username = str(request.get_json().get("username"))
     password = str(request.get_json().get("password"))
-    if username is None or password is None:
-        return {"success": False, "message":"Both email and password need to be provided."},400
-    successful,old_password = select_password(username)
-    if not successful:
-        return "{}", 500
-    if old_password is None or password != old_password:
-        return {"success": False, "message": "Wrong username or password."},200;
-    token = create_token()
-    success,_ = create_login(username, token)
-    if not success:
-        return "{}", 500
-    return {"success": True, "message": "Successfully signed in.", "data": token},200
+    return _sign_in(username,password)
 
 @app.route("/is_signed_in", methods = ["POST"])
 def is_signed_in():
     token = str(request.get_json().get("token"))
-    success,is_valid = is_valid_token(token)
-    if not success:
-        return "{}", 500
-    return {"success": is_valid, "message": "Successfully retrieved data."},200
+    return _is_signed_in(token)
 
 @app.route("/sign_up", methods = ["POST"])
 def sign_up():
-    init_db()
-    username = request.get_json().get("username")
-    password = request.get_json().get("password")
-    if username is None or type(username) != str or len(username) == 0:
-        return {"success": False, "message":"Both email and password need to be provided."},400
-    if password is None or type(password) != str or len(password) == 0:
-        return {"success": False, "message":"Both email and password need to be provided."},400
-    successful,_ = create_user(username, password)
-    if not successful:
-        return "{}", 500
-    socketio.emit("sign_up",{"username":username,"password":password})
-    return {"success": True, "message": "Successfully signed up."},200
+    username = str(request.get_json().get("username"))
+    password = str(request.get_json().get("password"))
+    return _sign_up(username,password)
 
 @app.route("/signups", methods = ["GET"])
 def signups():
-    init_db()
-    successful,users = select_users()
-    if not successful:
-        return "{}", 500
-    return {"success": True, "message": "Successfully retrieved data.","data":users},200
-
-def create_token():
-    token = ""
-    for i in range(10):
-        token += str(randint(0,9))
-    return token
+    return _signups()
 
 @app.route("/get_users", methods = ["GET"])
 def get_users():
-    success,users = select_users()
-    if not success:
-        return "{}", 500
-    return {"success": True, "message": "Successfully retrieved data.", "data": users},200
+    return _get_users()
+
+@app.route("/select_colour", methods = ["POST"])
+def select_colour():
+    colour = str(request.get_json().get("colour")).lower()
+    return _select_colour(colour)
+
+@app.route("/make_move", methods = ["POST"])
+def make_move():
+    move = str(request.get_json().get("move")).lower()
+    return _make_move(move)
 
 app.run(debug=True,port=5000)

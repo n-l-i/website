@@ -1,8 +1,9 @@
 from sqlite3 import connect,IntegrityError
 from time import time
+import pathlib
 
 # Location of database file
-DB_PATH = "Backend/database.db"
+DB_PATH = f"{pathlib.Path(__file__).parent.resolve()}/database.db"
 # Sign in tokens are valid for 30 minutes
 TOKEN_VALIDITY_PERIOD = 60*30
 
@@ -46,7 +47,8 @@ def create_user(username, password):
         return (True,None)
     except IntegrityError:
         return (True,None)
-    except:
+    except Exception as e:
+        print(e)
         return (False,None)
 
 def create_login(username, token):

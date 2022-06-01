@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<link href="get_file/Frontend/Content_pages/chess_ai/chess_ai.css" rel="stylesheet" type="text/css">
+
+<div id="tab_area">
+    <div id="input_area">
+        <p>Select colour:</p>
+        <select id="colour_input" name="colour">
+            <option value="white">White</option>
+            <option value="black">Black</option>
+        </select>
+
+        <input class="button" type="button" value="Send" onclick="select_colour();return false;">
+        <br><br>
+        <p>Select move:</p>
+        <select id="move_input" name="move">
+        </select>
+        <input class="button" type="button" value="Send" onclick="select_move();return false;">
+    </div>
+    <div id="chess_ai">
+    On this page resides a chess AI I've written. Select your preferred chess colour and have a go trying to beat it.
+    </div>
+</div>

@@ -1,7 +1,4 @@
 #!/bin/bash
-(cd "$(dirname "$0")" && python3 Backend/server.py) &
-if which xdg-open > /dev/null
-then
-  xdg-open "http://localhost:5000/"
-fi
+
+(cd "$(dirname "$0")" && source venv/bin/activate && cd ..; python3 -m website.Backend.server) &
 wait
