@@ -11,7 +11,7 @@ def get_tab(tab):
     try:
         with open(tab_adress, 'r') as file:
             html = file.read().replace('\n', '')
-        return {"success":True,"message":None,"data":html},200
+        return {"success":True,"message":None,"data":{"tab_name":tab,"html":html}},200
     except:
         return {"success":False,"message":None},500
 

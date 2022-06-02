@@ -25,7 +25,10 @@ function open_tab(tab_name){
 }
 
 function load_tab(response){
-  document.getElementById("tab_content").innerHTML = response.data;
+    document.getElementById("tab_content").innerHTML = response.data.html;
+    if (response.data.tab_name === "chess_ai") {
+        load_chess_ai();
+    }
 }
 
 function make_http_request(method,url,data,onload){
