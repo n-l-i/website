@@ -2,6 +2,14 @@
     background-color: lightcoral;
 }
 
+#header {
+    flex-shrink: 0;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightskyblue;
+}
+
 #tab_area {
     display: flex;
     flex-direction: row;
@@ -20,9 +28,30 @@
 #chess_ai {
     flex-grow: 1;
     border-style: solid;
-    padding: 5px;
     margin: 5px;
     background-color: lightskyblue;
     font-family:monospace;
     overflow: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+.chess_tile_row {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+}
+
+.light_tile, .dark_tile {
+    width: 100px;
+    flex-grow: 1;
+    font-size: 30px;
+    text-align: center;
+}
+.light_tile {
+    background-color: lightblue;
+}
+.dark_tile {
+    background-color: blue;
 }

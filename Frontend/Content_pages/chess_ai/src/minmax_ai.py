@@ -12,7 +12,7 @@ def get_score(board,colour):
     score = 0
     pieces = board.get_pieces()
     for tile,piece in pieces[colour]:
-        score += len(board.attacks(tile))/50
+        score += len(board.attacks(tile))/200
         if piece.piece_type == chess.PAWN:
             score += 1
         if piece.piece_type == chess.KNIGHT:
@@ -53,7 +53,7 @@ def score_moves_minmax(board):
     parameters = []
     for move in board.legal_moves:
         board.push(move)
-        parameters.append({"board":board,"colour":not board.turn,"n_moves":3,"previous_move":move})
+        parameters.append({"board":board,"colour":not board.turn,"n_moves":2,"previous_move":move})
         board.pop()
     moves = multiprocess(minmax_score,parameters,10)
     # Normalise scores
