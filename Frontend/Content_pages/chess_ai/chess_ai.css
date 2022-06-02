@@ -30,7 +30,6 @@
     border-style: solid;
     margin: 5px;
     background-color: lightskyblue;
-    font-family:monospace;
     overflow: scroll;
     display: flex;
     flex-direction: column;
@@ -54,4 +53,13 @@
 }
 .dark_tile {
     background-color: blue;
+}
+.selected_tile {
+    background-color: yellow;
+}
+.targeted_tile.dark_tile {
+    background-color: limegreen;
+}
+.targeted_tile.light_tile {
+    background-color: lime;
 }

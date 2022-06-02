@@ -10,7 +10,7 @@ def get_board(board):
             col = cols[j]
             if tile == ".":
                 continue
-            str_board[row+col] = tile
+            str_board[col+row] = tile
     return str_board
 
 def select_colour(colour):
@@ -32,11 +32,11 @@ def make_move(move):
     except:
         return {"success": False,"message":"Internal server error."+str(e)},500
     if board.outcome() is not None:
-        end_reason = str(board.outcome().termination).replace("Termination.","").lower()
-        end_reason[0] = end_reason[0].upper()
+        end_reason = str(board.outcome().termination).replace("Termination.","")
+        end_reason = end_reason[0].upper()+end_reason[1:].lower()
         colours = {True:"White",False:"Black",None:"Draw"}
         winner = colours[board.outcome().winner]
-        return {"success": True,"data":{"game_is_over":True,"end_reason":end_reason,"winner":winner}},200
+        return {"success": True,"data":{"board":get_board(board),"legal_moves":[],"game_is_over":True,"end_reason":end_reason,"winner":winner}},200
     return {"success": True,"data":{"board":get_board(board),"legal_moves":[]}},200
 
 def let_ai_make_move():

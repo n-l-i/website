@@ -9,7 +9,8 @@ from ..Frontend.Login_pages.server_interface import (
 )
 from ..Frontend.Content_pages.chess_ai.server_interface import (
     select_colour as _select_colour,
-    make_move as _make_move
+    make_move as _make_move,
+    let_ai_make_move as _let_ai_make_move
 )
 
 app = Flask(__name__)
@@ -61,5 +62,9 @@ def select_colour():
 def make_move():
     move = str(request.get_json().get("move")).lower()
     return _make_move(move)
+
+@app.route("/let_ai_make_move", methods = ["POST"])
+def let_ai_make_move():
+    return _let_ai_make_move()
 
 app.run(debug=True,port=5000)
