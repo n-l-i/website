@@ -36,8 +36,8 @@ def make_move(move):
         end_reason = end_reason[0].upper()+end_reason[1:].lower()
         colours = {True:"White",False:"Black",None:"Draw"}
         winner = colours[board.outcome().winner]
-        return {"success": True,"data":{"board":get_board(board),"legal_moves":[],"game_is_over":True,"end_reason":end_reason,"winner":winner}},200
-    return {"success": True,"data":{"board":get_board(board),"legal_moves":[]}},200
+        return {"success": True,"data":{"move":move,"board":get_board(board),"legal_moves":[],"game_is_over":True,"end_reason":end_reason,"winner":winner}},200
+    return {"success": True,"data":{"move":move,"board":get_board(board),"legal_moves":[]}},200
 
 def let_ai_make_move():
     global board
@@ -49,4 +49,4 @@ def let_ai_make_move():
     if board.outcome() is not None:
         return {"success": True,"data":str(outcome)},200
     legal_moves = sorted([move.uci() for move in board.legal_moves])
-    return {"success": True,"data":{"board":get_board(board),"legal_moves":legal_moves}},200
+    return {"success": True,"data":{"move":ai_move,"board":get_board(board),"legal_moves":legal_moves}},200

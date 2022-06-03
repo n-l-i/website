@@ -11,6 +11,8 @@ function sleep(ms) {
 
 function select_colour(){
     colour = document.getElementById("colour_input").value
+    reset_selected_tiles();
+    document.getElementById("move_stack").innerHTML = "";
     make_http_request('POST', 'http://localhost:5000/select_colour', {"colour":colour}, display_board)
 }
 
@@ -23,16 +25,44 @@ function display_board(response){
         document.getElementById("status_msg").innerHTML = response.message;
         return;
     }
-    if (typeof response.data.game_is_over !== "undefined"){
-        document.getElementById("chess_ai").innerHTML = "Game has ended, "+response.data.end_reason+".<br>Winner: "+response.data.winner+"<br>"+document.getElementById("chess_ai").innerHTML;
-    }
-    render_board(response.data.board);
+    render_board(response.data.board,response.data.move);
     localStorage.setItem("legal_moves",response.data.legal_moves);
     document.getElementById("status_msg").innerHTML = "move request successful";
+    if (typeof response.data.move != "undefined"){
+        let move = response.data.move.slice(0,2)+"&#8594;"+response.data.move.slice(2);
+        let last_move_row = String(document.getElementById("move_stack").innerHTML).split("<br>")[0];
+        if (last_move_row.length == 0) {
+            document.getElementById("move_stack").innerHTML = move;
+        } else if (last_move_row.length < 7){
+            let other_move_rows = String(document.getElementById("move_stack").innerHTML).slice(last_move_row.length);
+            document.getElementById("move_stack").innerHTML = String(last_move_row+",").padEnd(8).replaceAll(" ","&nbsp;")+move+other_move_rows;
+        } else {
+            document.getElementById("move_stack").innerHTML = move+"<br>"+document.getElementById("move_stack").innerHTML;
+        }
+    }
+    if (typeof response.data.game_is_over !== "undefined"){
+        document.getElementById("chess_ai").innerHTML = "<div id=\"gameover_msg\">Game has ended, "+response.data.end_reason+".<br>Winner: "+response.data.winner+"</div><br>"+document.getElementById("chess_ai").innerHTML;
+        return;
+    }
     if (response.data.legal_moves.length == 0){
         document.getElementById("chess_ai").innerHTML = "Waiting for AI to make a move...<br>"+document.getElementById("chess_ai").innerHTML;
         make_http_request('POST', 'http://localhost:5000/let_ai_make_move', {}, display_board);
     }
+}
+
+function reset_selected_tiles(){
+    String(localStorage.getItem("targeted_tiles")).split(",").forEach(targeted_id => {
+        if (targeted_id.length > 0){
+            document.getElementById(targeted_id).classList.remove("targeted_tile");
+        }
+    });
+    localStorage.setItem("targeted_tiles","");
+    String(localStorage.getItem("selected_tiles")).split(",").forEach(selected_id => {
+        if (selected_id.length > 0){
+            document.getElementById(selected_id).classList.remove("selected_tile");
+        }
+    });
+    localStorage.setItem("selected_tiles","");
 }
 
 function select_tile(div_id){
@@ -47,20 +77,7 @@ function select_tile(div_id){
     if (!String(localStorage.getItem("legal_moves")+",").includes(move+",")){
         move += "q";
     }
-    console.log(is_selected_move);
-    console.log(move);
-    String(localStorage.getItem("targeted_tiles")).split(",").forEach(targeted_id => {
-        if (targeted_id.length > 0){
-            document.getElementById(targeted_id).classList.remove("targeted_tile");
-        }
-    });
-    localStorage.setItem("targeted_tiles","");
-    String(localStorage.getItem("selected_tiles")).split(",").forEach(selected_id => {
-        if (selected_id.length > 0){
-            document.getElementById(selected_id).classList.remove("selected_tile");
-        }
-    });
-    localStorage.setItem("selected_tiles","");
+    reset_selected_tiles();
     if (is_selected_move){
         make_http_request('POST', 'http://localhost:5000/make_move', {"move":move}, display_board);
         return;
@@ -75,7 +92,7 @@ function select_tile(div_id){
     document.getElementById(div_id).classList.add("selected_tile");
 }
 
-function render_board(text_board){
+function render_board(text_board,last_move){
     let board = "";
     let tile_class = "light_tile";
     let piece_codes = {"p":"&#9823;","r":"&#9820;","n":"&#9822;","b":"&#9821;","k":"&#9818;","q":"&#9819;"}
@@ -116,4 +133,9 @@ function render_board(text_board){
         board += "</div>";
     });
     document.getElementById("chess_ai").innerHTML = board;
+    if (typeof last_move != "undefined"){
+        localStorage.setItem("selected_tiles",last_move.slice(0,2)+","+last_move.slice(2,4));
+        document.getElementById(last_move.slice(0,2)).classList.add("selected_tile");
+        document.getElementById(last_move.slice(2,4)).classList.add("selected_tile");
+    }
 }
