@@ -6,12 +6,13 @@ from pickle import PicklingError
 import dill
 
 def init_worker(function):
-    def worker_function(arguments):
+    def worker_function(parameters):
+        key,arguments = parameters
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         results = function(**arguments)
         if isinstance(results,GeneratorType):
             results = [item for item in results]
-        return results
+        return key,results
     return dill.dumps(worker_function)
 
 def run_function(payload):
@@ -30,11 +31,8 @@ def multiprocess(function,arguments,pool_size):
             pooled_tasks.close()
             pooled_tasks.join()
             returns = []
-            for result in results:
-                if isinstance(result,list):
-                    returns += result
-                else:
-                    returns.append(result)
+            for key,result in results:
+                returns.append((result,key))
         return returns
     except Exception as e:
         function_name = function.__name__

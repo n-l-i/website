@@ -1,4 +1,5 @@
 from .src.game import Ext_board,push_move,get_ai_move
+from time import time
 
 def get_board(board):
     str_board = {}
@@ -41,6 +42,7 @@ def make_move(move):
 
 def let_ai_make_move():
     global board
+    start_time = time()
     try:
         ai_move = get_ai_move(board).uci()
         push_move(board,ai_move)
@@ -49,4 +51,5 @@ def let_ai_make_move():
     if board.outcome() is not None:
         return {"success": True,"data":str(outcome)},200
     legal_moves = sorted([move.uci() for move in board.legal_moves])
+    print("Took time:",time()-start_time)
     return {"success": True,"data":{"move":ai_move,"board":get_board(board),"legal_moves":legal_moves}},200
