@@ -1,7 +1,7 @@
 function load_chess_ai(){
-    document.getElementById("header").innerHTML = "On this page resides a chess AI I've written. Select your preferred chess colour and have a go trying to beat it.";
     localStorage.setItem("selected_tiles","");
     localStorage.setItem("targeted_tiles","");
+    setInterval(count_down_timer, 1000); 
     select_colour();
 }
 
@@ -9,10 +9,19 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function count_down_timer(){
+    if (document.getElementById("chess_timer") !== null) {
+        let timer_id = String(localStorage.getItem("turn"))+"_timer";
+        document.getElementById(timer_id).innerHTML = String(parseInt(document.getElementById(timer_id).innerHTML)-1);
+    }
+}
+
 function select_colour(){
+    document.getElementById("header").innerHTML = "On this page resides a chess AI I've written. Select your preferred chess colour and have a go trying to beat it.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
     colour = document.getElementById("colour_input").value
     reset_selected_tiles();
     document.getElementById("move_stack").innerHTML = "";
+    localStorage.setItem("turn",colour);
     make_http_request('POST', 'http://localhost:5000/select_colour', {"colour":colour}, display_board)
 }
 
@@ -24,6 +33,11 @@ function display_board(response){
     if (response.success !== true) {
         document.getElementById("status_msg").innerHTML = response.message;
         return;
+    }
+    if (String(localStorage.getItem("turn")) != "white") {
+        localStorage.setItem("turn","white");
+    } else {
+        localStorage.setItem("turn","black");
     }
     render_board(response.data.board,response.data.move);
     localStorage.setItem("legal_moves",response.data.legal_moves);
@@ -42,6 +56,7 @@ function display_board(response){
     }
     if (typeof response.data.game_is_over !== "undefined"){
         document.getElementById("chess_ai").innerHTML = "<div id=\"gameover_msg\">Game has ended, "+response.data.end_reason+".<br>Winner: "+response.data.winner+"</div><br>"+document.getElementById("chess_ai").innerHTML;
+        localStorage.setItem("turn","None");
         return;
     }
     if (response.data.legal_moves.length == 0){

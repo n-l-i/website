@@ -10,6 +10,11 @@
     background-color: lightskyblue;
 }
 
+#chess_timer {
+    display: flex;
+    flex-direction: row;
+}
+
 #tab_area {
     display: flex;
     flex-direction: row;
