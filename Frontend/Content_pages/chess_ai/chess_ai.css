@@ -23,6 +23,8 @@
     padding: 5px;
     margin: 5px;
     background-color: lightskyblue;
+    overflow:scroll;
+    font-family: monospace, monospace;
 }
 
 #chess_ai {
@@ -33,6 +35,10 @@
     overflow: scroll;
     display: flex;
     flex-direction: column;
+}
+
+#gameover_msg {
+    padding: 5px;
 }
 
 .chess_tile_row {
@@ -49,17 +55,20 @@
     text-align: center;
 }
 .light_tile {
-    background-color: lightblue;
+    background-color: lightskyblue;
 }
 .dark_tile {
-    background-color: blue;
+    background-color: #0a9bf5;
 }
-.selected_tile {
-    background-color: yellow;
+.selected_tile.light_tile {
+    background-color: #ffec80;
+}
+.selected_tile.dark_tile {
+    background-color: #ffd900;
 }
 .targeted_tile.dark_tile {
     background-color: limegreen;
 }
 .targeted_tile.light_tile {
-    background-color: lime;
+    background-color: #98e698;
 }
