@@ -1,8 +1,11 @@
 function load_chess_ai(){
     localStorage.setItem("selected_tiles","");
     localStorage.setItem("targeted_tiles","");
+    localStorage.setItem("turn","");
+    localStorage.setItem("selected_colour","");
+    localStorage.setItem("legal_moves","");
     setInterval(count_down_timer, 1000); 
-    select_colour();
+    select_mode();
 }
 
 function sleep(ms) {
@@ -16,12 +19,29 @@ function count_down_timer(){
     }
 }
 
+function select_mode(){
+    mode = document.getElementById("mode_input").value
+    make_http_request('POST', 'http://localhost:5000/select_mode', {"mode":mode}, change_mode)
+}
+function change_mode(response){
+    if (response.status_code !== 200) {
+        document.getElementById("status_msg").innerHTML = "mode request failed";
+        return;
+    }
+    if (response.success !== true) {
+        document.getElementById("status_msg").innerHTML = response.message;
+        return;
+    }
+    select_colour();
+}
+
 function select_colour(){
-    document.getElementById("header").innerHTML = "On this page resides a chess AI I've written. Select your preferred chess colour and have a go trying to beat it.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
+    document.getElementById("header").innerHTML = "On this page resides a chess AI I've written.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
     colour = document.getElementById("colour_input").value
     reset_selected_tiles();
     document.getElementById("move_stack").innerHTML = "";
     localStorage.setItem("turn",colour);
+    localStorage.setItem("selected_colour",colour);
     make_http_request('POST', 'http://localhost:5000/select_colour', {"colour":colour}, display_board)
 }
 
@@ -111,7 +131,7 @@ function render_board(text_board,last_move){
     let board = "";
     let tile_class = "light_tile";
     let piece_codes = {"p":"&#9823;","r":"&#9820;","n":"&#9822;","b":"&#9821;","k":"&#9818;","q":"&#9819;"}
-    colour = document.getElementById("colour_input").value
+    colour = localStorage.getItem("selected_colour")
     let rows;
     let cols;
     if (colour === "white") {

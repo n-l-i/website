@@ -8,6 +8,7 @@ from ..Frontend.Login_pages.server_interface import (
     get_users as _get_users
 )
 from ..Frontend.Content_pages.chess_ai.server_interface import (
+    select_mode as _select_mode,
     select_colour as _select_colour,
     make_move as _make_move,
     let_ai_make_move as _let_ai_make_move
@@ -52,6 +53,11 @@ def signups():
 @app.route("/get_users", methods = ["GET"])
 def get_users():
     return _get_users()
+
+@app.route("/select_mode", methods = ["POST"])
+def select_mode():
+    mode = str(request.get_json().get("mode")).lower()
+    return _select_mode(mode)
 
 @app.route("/select_colour", methods = ["POST"])
 def select_colour():

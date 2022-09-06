@@ -4,6 +4,14 @@
 
 <div id="tab_area">
     <div id="input_area">
+        <p>Select game mode:</p>
+        <select id="mode_input" name="colour">
+            <option value="ai_vs_human">AI vs Human</option>
+            <option value="human_vs_human">Human vs Human</option>
+            <option value="ai_vs_ai">AI vs AI</option>
+        </select>
+        <input class="button" type="button" value="Send" onclick="select_mode();return false;">
+        <br><br>
         <p>Select colour:</p>
         <select id="colour_input" name="colour">
             <option value="white">White</option>
