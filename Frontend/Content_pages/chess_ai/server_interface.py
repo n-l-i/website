@@ -1,4 +1,5 @@
-from .src.game import Board,push_move,get_ai_move
+from .src.game import push_move,get_ai_move
+from chess import Board
 from time import time
 
 def get_board(board):
