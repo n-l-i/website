@@ -11,7 +11,10 @@ paths["chess_ai"] = {"git_link":"https://github.com/n-l-i/chess_ai.git",
 
 def main():
     for repo in paths.values():
-        rmtree(repo['local_directory'])
+        try:
+            rmtree(repo['local_directory'])
+        except FileNotFoundError:
+            pass
         output = run(f"git clone {repo['git_link']} {repo['local_directory']}", shell=True, check=True)
         if output.returncode != 0:
             raise Exception
