@@ -21,6 +21,7 @@ function load_window(){
 }
 
 function open_tab(tab_name){
+    document.getElementById("header").innerHTML = "";
     make_http_request("POST", 'http://localhost:5000/get_tab', {"tab":tab_name}, load_tab);
 }
 

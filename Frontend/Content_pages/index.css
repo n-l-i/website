@@ -45,6 +45,14 @@ body {
     flex-shrink: 0;
 }
 
+#header {
+    flex-shrink: 0;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightskyblue;
+}
+
 #tab_content {
     min-height: 0px;
     flex-shrink: 1;
