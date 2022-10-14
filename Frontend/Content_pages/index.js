@@ -50,3 +50,22 @@ function make_http_request(method,url,data,onload){
     request_body = JSON.stringify(data);
     xmlhttp.send(request_body);
 }
+
+function sign_out() {
+    token = localStorage.getItem("token");
+    make_http_request('POST', 'http://localhost:5000/sign_out', {"token":token}, load_sign_out)
+}
+
+function load_sign_out(response){
+    if (response.status_code !== 200) {
+        document.getElementById("status_msg").innerHTML = "request failed";
+        return;
+    }
+    if (response.success !== true) {
+        document.getElementById("status_msg").innerHTML = "sign out failed";
+        return;
+    }
+    localStorage.removeItem("token");
+    document.getElementById("status_msg").innerHTML = "sign out successful";
+    window.location.reload();
+}

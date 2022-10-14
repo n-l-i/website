@@ -1,5 +1,13 @@
 from time import sleep
-from ...Backend.database_requests import create_login,is_valid_token,create_user,select_password,select_users,init_db
+from ...Backend.database_requests import (
+    create_login,
+    is_valid_token,
+    delete_token,
+    create_user,
+    select_password,
+    select_users,
+    init_db
+)
 from random import randint
 import pathlib
 
@@ -28,6 +36,19 @@ def sign_in(username,password):
     if not success:
         return "{}", 500
     return {"success": True, "message": "Successfully signed in.", "data": token},200
+
+def sign_out(token):
+    if len(token) == 0:
+        return {"success": False, "message":"Access token needs to be provided."},400
+    successful,token_is_valid = is_valid_token(token)
+    if not successful:
+        return "{}", 500
+    if not token_is_valid:
+        return {"success": False, "message": "Access token is not valid."},200;
+    success = delete_token(token)
+    if not success:
+        return "{}", 500
+    return {"success": True, "message": "Successfully signed out."},200
 
 def is_signed_in(token):
     success,is_valid = is_valid_token(token)

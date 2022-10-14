@@ -2,6 +2,7 @@ from flask import Flask, request, send_file
 from ..Frontend.Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
+    sign_out as _sign_out,
     is_signed_in as _is_signed_in,
     sign_up as _sign_up,
     signups as _signups,
@@ -34,6 +35,11 @@ def sign_in():
     username = str(request.get_json().get("username"))
     password = str(request.get_json().get("password"))
     return _sign_in(username,password)
+
+@app.route("/sign_out", methods = ["POST"])
+def sign_out():
+    token = str(request.get_json().get("token"))
+    return _sign_out(token)
 
 @app.route("/is_signed_in", methods = ["POST"])
 def is_signed_in():
