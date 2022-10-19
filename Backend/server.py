@@ -1,5 +1,5 @@
 from flask import Flask, request, send_file
-from ..Frontend.Login_pages.server_interface import (
+from ..Backend.Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
     sign_out as _sign_out,
@@ -8,7 +8,7 @@ from ..Frontend.Login_pages.server_interface import (
     signups as _signups,
     get_users as _get_users
 )
-from ..Frontend.Content_pages.chess_ai.server_interface import (
+from ..Backend.Content_pages.chess_ai.server_interface import (
     select_mode as _select_mode,
     select_colour as _select_colour,
     make_move as _make_move,

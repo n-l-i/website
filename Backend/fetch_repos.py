@@ -7,7 +7,7 @@ from os import listdir
 current_path = pathlib.Path(__file__).parent.resolve()
 paths = {}
 paths["chess_ai"] = {"git_link":"https://github.com/n-l-i/chess_ai.git",
-                     "local_directory":f"{current_path}/../Frontend/Content_pages/chess_ai/src"}
+                     "local_directory":f"{current_path}/../Backend/Content_pages/chess_ai/src"}
 
 def main():
     for repo in paths.values():
