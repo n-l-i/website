@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, make_response
 import pathlib
 from ..Backend.Login_pages.server_interface import (
     get_tab as _get_tab,
@@ -25,65 +25,78 @@ app = Flask(__name__)
 
 @app.route("/", methods = ["GET"])
 def hello():
-    return send_file("../Frontend/Landing_page/index.html")
+    response = make_response(send_file("../Frontend/Landing_page/index.html"))
+    return response
 
 @app.route("/get_file/<path:file_path>", methods = ["GET"])
 def get_file(file_path):
-    return send_file(f"../{file_path}")
+    response = make_response(send_file(f"../{file_path}"))
+    return response
 
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
     tab = str(request.get_json().get("tab"))
-    return _get_tab(tab)
+    response = make_response(_get_tab(tab))
+    return response
 
 @app.route("/sign_in", methods = ["POST"])
 def sign_in():
     username = str(request.get_json().get("username"))
     password = str(request.get_json().get("password"))
-    return _sign_in(username,password)
+    response = make_response(_sign_in(username,password))
+    return response
 
 @app.route("/sign_out", methods = ["POST"])
 def sign_out():
     token = str(request.get_json().get("token"))
-    return _sign_out(token)
+    response = make_response(_sign_out(token))
+    return response
 
 @app.route("/is_signed_in", methods = ["POST"])
 def is_signed_in():
     token = str(request.get_json().get("token"))
-    return _is_signed_in(token)
+    response = make_response(_is_signed_in(token))
+    return response
 
 @app.route("/sign_up", methods = ["POST"])
 def sign_up():
     username = str(request.get_json().get("username"))
     password = str(request.get_json().get("password"))
-    return _sign_up(username,password)
+    response = make_response(_sign_up(username,password))
+    return response
 
 @app.route("/signups", methods = ["GET"])
 def signups():
-    return _signups()
+    response = make_response(_signups())
+    return response
 
 @app.route("/get_users", methods = ["GET"])
 def get_users():
-    return _get_users()
+    response = make_response(_get_users())
+    return response
 
 @app.route("/select_mode", methods = ["POST"])
 def select_mode():
     mode = str(request.get_json().get("mode")).lower()
-    return _select_mode(mode)
+    response = make_response(_select_mode(mode))
+    return response
 
 @app.route("/select_colour", methods = ["POST"])
 def select_colour():
     colour = str(request.get_json().get("colour")).lower()
-    return _select_colour(colour)
+    response = make_response(_select_colour(colour))
+    return response
 
 @app.route("/make_move", methods = ["POST"])
 def make_move():
     move = str(request.get_json().get("move")).lower()
-    return _make_move(move)
+    response = make_response(_make_move(move))
+    return response
 
 @app.route("/let_ai_make_move", methods = ["POST"])
 def let_ai_make_move():
-    return _let_ai_make_move()
+    response = make_response(_let_ai_make_move())
+    return response
 
 SSL_CERT_PATH = f"{pathlib.Path(__file__).parent.parent.resolve()}/SSL_cert"
 ssl_cert = f"{SSL_CERT_PATH}/fullchain.pem"
