@@ -3,8 +3,6 @@ function sign_up() {
     password = document.getElementById("password_input").value;
     fruit = document.getElementById("fruit_input").value;
     make_http_request('POST', HOST_URL+'/sign_up', {"username":email,"password":password,"favourite_fruit":fruit}, load_sign_up);
-    
-    document.getElementById("sent").innerHTML += "<br>"+request_body;
 }
 
 function load_sign_up(response){
