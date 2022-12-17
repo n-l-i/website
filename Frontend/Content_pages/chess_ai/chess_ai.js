@@ -21,7 +21,7 @@ function count_down_timer(){
 
 function select_mode(){
     mode = document.getElementById("mode_input").value
-    make_http_request('POST', 'https://localhost/select_mode', {"mode":mode}, change_mode)
+    make_http_request('POST', HOST_URL+'/select_mode', {"mode":mode}, change_mode)
 }
 function change_mode(response){
     if (response.status_code !== 200) {
@@ -42,7 +42,7 @@ function select_colour(){
     document.getElementById("move_stack").innerHTML = "";
     localStorage.setItem("turn",colour);
     localStorage.setItem("selected_colour",colour);
-    make_http_request('POST', 'https://localhost/select_colour', {"colour":colour}, display_board)
+    make_http_request('POST', HOST_URL+'/select_colour', {"colour":colour}, display_board)
 }
 
 function display_board(response){
@@ -81,7 +81,7 @@ function display_board(response){
     }
     if (response.data.legal_moves.length == 0){
         document.getElementById("chess_ai").innerHTML = "Waiting for AI to make a move...<br>"+document.getElementById("chess_ai").innerHTML;
-        make_http_request('POST', 'https://localhost/let_ai_make_move', {}, display_board);
+        make_http_request('POST', HOST_URL+'/let_ai_make_move', {}, display_board);
     }
 }
 
@@ -114,7 +114,7 @@ function select_tile(div_id){
     }
     reset_selected_tiles();
     if (is_selected_move){
-        make_http_request('POST', 'https://localhost/make_move', {"move":move}, display_board);
+        make_http_request('POST', HOST_URL+'/make_move', {"move":move}, display_board);
         return;
     }
     String(localStorage.getItem("legal_moves")).split(",").forEach(move => {
