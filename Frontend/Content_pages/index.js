@@ -1,6 +1,6 @@
-load_window();
+load_content_pages();
 
-function load_window(){
+function load_content_pages(){
     var newScript = document.createElement("script");
     newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/home/home.js";
     document.head.appendChild(newScript);

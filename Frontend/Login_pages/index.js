@@ -1,6 +1,6 @@
-load_window();
+load_login_pages();
 
-function load_window(){
+function load_login_pages(){
     var newScript = document.createElement("script");
     newScript.src = HOST_URL+"/get_file/Frontend/Login_pages/signin/signin.js";
     document.head.appendChild(newScript);
@@ -20,6 +20,9 @@ function open_tab(tab_name){
 
 function load_tab(response){
   document.getElementById("tab_content").innerHTML = response.data.html;
+  if (response.data.tab_name === "signup") {
+    list_favourite_fruits();
+  }
 }
 
 function make_http_request(method,url,data,onload){

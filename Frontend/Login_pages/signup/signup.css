@@ -11,7 +11,7 @@
     width: 100%;
 }
 
-#input_area, #sent, #received, #signup_log {
+#input_area, #sent, #received, #fruits_log {
     flex-shrink: 0;
     border-style: solid;
     padding: 5px;

@@ -6,8 +6,7 @@ from ..Backend.Login_pages.server_interface import (
     sign_out as _sign_out,
     is_signed_in as _is_signed_in,
     sign_up as _sign_up,
-    signups as _signups,
-    get_users as _get_users
+    get_favourite_fruits as _get_favourite_fruits
 )
 from ..Backend.Content_pages.chess_ai.server_interface import (
     select_mode as _select_mode,
@@ -62,7 +61,8 @@ def is_signed_in():
 def sign_up():
     username = str(request.get_json().get("username"))
     password = str(request.get_json().get("password"))
-    response = make_response(_sign_up(username,password))
+    favourite_fruit = str(request.get_json().get("favourite_fruit"))
+    response = make_response(_sign_up(username,password,favourite_fruit))
     return response
 
 @app.route("/signups", methods = ["GET"])
@@ -70,9 +70,9 @@ def signups():
     response = make_response(_signups())
     return response
 
-@app.route("/get_users", methods = ["GET"])
-def get_users():
-    response = make_response(_get_users())
+@app.route("/get_favourite_fruits", methods = ["GET"])
+def get_favourite_fruits():
+    response = make_response(_get_favourite_fruits())
     return response
 
 @app.route("/select_mode", methods = ["POST"])

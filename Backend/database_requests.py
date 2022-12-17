@@ -24,6 +24,7 @@ def init_db():
     db_connection.execute("CREATE TABLE IF NOT EXISTS users ("+ \
                             "username TEXT NOT NULL,"+ \
                             "password TEXT NOT NULL,"+ \
+                            "favourite_fruit TEXT NOT NULL,"+ \
                             "PRIMARY KEY (username));")
     db_connection.execute("COMMIT;")
     db_connection.execute("BEGIN;")
@@ -36,12 +37,12 @@ def init_db():
     db_connection.execute("COMMIT;")
     _close_connection(db_connection)
 
-def create_user(username, password):
-    user = (username, password)
+def create_user(username, password, favourite_fruit):
+    user = (username, password, favourite_fruit)
     try:
         db_connection = _open_connection()
         db_connection.execute("BEGIN;")
-        db_connection.execute("INSERT INTO users VALUES (?,?);",user)
+        db_connection.execute("INSERT INTO users VALUES (?,?,?);",user)
         db_connection.execute("COMMIT;")
         _close_connection(db_connection)
         return (True,None)
@@ -128,5 +129,21 @@ def select_users():
         if users is None:
             return (True,None)
         return (True,users)
+    except:
+        return (False,None)
+
+def select_favourite_fruits():
+    try:
+        db_connection = _open_connection()
+        db_connection.execute("""SELECT favourite_fruit
+                                 FROM users
+                                 WHERE favourite_fruit IS NOT NULL
+                                 GROUP BY favourite_fruit
+                                 ORDER BY RANDOM();""")
+        fruits = db_connection.fetchall()
+        _close_connection(db_connection)
+        if fruits is None:
+            return (True,None)
+        return (True,fruits)
     except:
         return (False,None)
