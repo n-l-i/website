@@ -95,7 +95,8 @@ def make_move():
 
 @app.route("/let_ai_make_move", methods = ["POST"])
 def let_ai_make_move():
-    response = make_response(_let_ai_make_move())
+    thinking_time = int(str(request.get_json().get("thinking_time")))
+    response = make_response(_let_ai_make_move(thinking_time))
     return response
 
 SSL_CERT_PATH = f"{pathlib.Path(__file__).parent.parent.resolve()}/SSL_cert"

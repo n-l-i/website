@@ -55,11 +55,10 @@ def make_move(move):
         legal_moves = []
     return {"success": True,"data":{"move":move,"board":get_board(board),"legal_moves":legal_moves}},200
 
-def let_ai_make_move():
+def let_ai_make_move(thinking_time):
     global board
-    start_time = time()
     try:
-        ai_move = get_ai_move(board).uci()
+        ai_move = get_ai_move(board,thinking_time).uci()
         push_move(board,ai_move)
     except Exception as e:
         import traceback

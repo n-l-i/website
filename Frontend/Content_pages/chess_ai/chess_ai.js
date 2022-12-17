@@ -81,7 +81,7 @@ function display_board(response){
     }
     if (response.data.legal_moves.length == 0){
         document.getElementById("chess_ai").innerHTML = "Waiting for AI to make a move...<br>"+document.getElementById("chess_ai").innerHTML;
-        make_http_request('POST', HOST_URL+'/let_ai_make_move', {}, display_board);
+        make_http_request('POST', HOST_URL+'/let_ai_make_move', {"thinking_time":10}, display_board);
     }
 }
 
