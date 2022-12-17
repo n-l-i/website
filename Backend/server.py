@@ -1,4 +1,5 @@
 from flask import Flask, request, send_file
+import pathlib
 from ..Backend.Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
@@ -14,6 +15,11 @@ from ..Backend.Content_pages.chess_ai.server_interface import (
     make_move as _make_move,
     let_ai_make_move as _let_ai_make_move
 )
+from ..Backend.database_requests import (
+    init_db as _init_db
+)
+
+_init_db()
 
 app = Flask(__name__)
 
@@ -79,4 +85,7 @@ def make_move():
 def let_ai_make_move():
     return _let_ai_make_move()
 
-app.run(debug=True,port=5000)
+SSL_CERT_PATH = f"{pathlib.Path(__file__).parent.parent.resolve()}/SSL_cert"
+ssl_cert = f"{SSL_CERT_PATH}/fullchain.pem"
+ssl_key = f"{SSL_CERT_PATH}/privkey.pem"
+app.run(debug=True,host='0.0.0.0', port=443, ssl_context=(ssl_cert,ssl_key))

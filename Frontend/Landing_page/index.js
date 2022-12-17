@@ -1,15 +1,15 @@
 window.onload = function(){
     let token = localStorage.getItem("token");
-    make_http_request("POST", 'http://localhost:5000/is_signed_in', {"token":token}, open_start_tab);
+    make_http_request("POST", 'https://localhost/is_signed_in', {"token":token}, open_start_tab);
 }
 
 function open_start_tab(response){
     if (response.status_code !== 200 || response.success !== true) {
-        replace_html("http://localhost:5000/get_file/Frontend/Login_pages/");
+        replace_html("https://localhost/get_file/Frontend/Login_pages/");
         localStorage.removeItem("token");
         return;
     }
-    replace_html("http://localhost:5000/get_file/Frontend/Content_pages/");
+    replace_html("https://localhost/get_file/Frontend/Content_pages/");
 }
 
 function replace_html(url){

@@ -2,19 +2,19 @@ load_window();
 
 function load_window(){
     var newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Content_pages/home/home.js";
+    newScript.src = "https://localhost/get_file/Frontend/Content_pages/home/home.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Content_pages/chess_ai/chess_ai.js";
+    newScript.src = "https://localhost/get_file/Frontend/Content_pages/chess_ai/chess_ai.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Content_pages/network_simulator/network_simulator.js";
+    newScript.src = "https://localhost/get_file/Frontend/Content_pages/network_simulator/network_simulator.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Content_pages/ssl_certs/ssl_certs.js";
+    newScript.src = "https://localhost/get_file/Frontend/Content_pages/ssl_certs/ssl_certs.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Content_pages/about/about.js";
+    newScript.src = "https://localhost/get_file/Frontend/Content_pages/about/about.js";
     document.head.appendChild(newScript);
     document.getElementById("status_msg").innerHTML = "loaded page";
     open_tab("home");
@@ -22,7 +22,7 @@ function load_window(){
 
 function open_tab(tab_name){
     document.getElementById("header").innerHTML = "";
-    make_http_request("POST", 'http://localhost:5000/get_tab', {"tab":tab_name}, load_tab);
+    make_http_request("POST", 'https://localhost/get_tab', {"tab":tab_name}, load_tab);
 }
 
 function load_tab(response){
@@ -54,7 +54,7 @@ function make_http_request(method,url,data,onload){
 
 function sign_out() {
     token = localStorage.getItem("token");
-    make_http_request('POST', 'http://localhost:5000/sign_out', {"token":token}, load_sign_out)
+    make_http_request('POST', 'https://localhost/sign_out', {"token":token}, load_sign_out)
 }
 
 function load_sign_out(response){

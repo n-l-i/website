@@ -2,20 +2,20 @@ load_window();
 
 function load_window(){
     var newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Login_pages/signin/signin.js";
+    newScript.src = "https://localhost/get_file/Frontend/Login_pages/signin/signin.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Login_pages/signup/signup.js";
+    newScript.src = "https://localhost/get_file/Frontend/Login_pages/signup/signup.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
-    newScript.src = "http://localhost:5000/get_file/Frontend/Content_pages/about/about.js";
+    newScript.src = "https://localhost/get_file/Frontend/Content_pages/about/about.js";
     document.head.appendChild(newScript);
     document.getElementById("status_msg").innerHTML = "loaded page";
     open_tab("signin");
 }
 
 function open_tab(tab_name){
-    make_http_request("POST", 'http://localhost:5000/get_tab', {"tab":tab_name}, load_tab);
+    make_http_request("POST", 'https://localhost/get_tab', {"tab":tab_name}, load_tab);
 }
 
 function load_tab(response){

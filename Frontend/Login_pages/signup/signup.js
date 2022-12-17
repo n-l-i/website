@@ -1,7 +1,7 @@
 function sign_up() {
     email = document.getElementById("email_input").value
     password = document.getElementById("password_input").value
-    make_http_request('POST', 'http://localhost:5000/sign_up', {"username":email,"password":password}, load_sign_up)
+    make_http_request('POST', 'https://localhost/sign_up', {"username":email,"password":password}, load_sign_up)
     
     document.getElementById("sent").innerHTML += "<br>"+request_body;
 }
@@ -21,7 +21,7 @@ function load_sign_up(response){
 
 function list_signups(){
     if (arguments.length == 0){
-        make_http_request("GET", 'http://localhost:5000/signups', {}, list_signups);
+        make_http_request("GET", 'https://localhost/signups', {}, list_signups);
         return;
     }
     response = arguments[0];
