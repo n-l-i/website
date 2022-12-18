@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<link href="get_file/Frontend/Login_pages/home/home.css" rel="stylesheet" type="text/css">
+
+<div id="tab_area">
+    <div id="signin_info">
+        To access the contents of this website you need to sign in.
+        You can create an account under "Sign up" and then use the registered credentials here.
+    </div>
+    <div id="input_area">
+        <div id="signin_area">
+            <h2>Sign in</h2>
+            <br>
+            <p>Email:</p>
+            <input type="email" id="signin_email_input" size=30 placeholder="email@domain.com"></textarea><br>
+            <p>Password:</p>
+            <input type="password" id="signin_password_input" size=30 placeholder="*****"></textarea><br>
+            <input class="button" type="button" value="Sign in" onclick="sign_in();return false;">
+        </div>
+        <div id="signup_area">
+            <h2>Sign up</h2>
+            <br>
+            <p>Email:</p>
+            <input type="email" id="signup_email_input" size=30 placeholder="email@domain.com"></textarea><br>
+            <p>Password: </p>
+            <input type="password" id="signup_password_input" size=30 placeholder="*****"></textarea><br>
+            <p>Favourite fruit:</p>
+            <input type="text" id="signup_fruit_input" size=30 placeholder="fruit name"></textarea><br>
+            <input class="button" type="button" value="Sign up" onclick="sign_up();return false;">
+        </div>
+    </div>
+    <div id="fruits_log">
+    </div>
+</div>

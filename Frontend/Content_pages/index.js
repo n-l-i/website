@@ -22,7 +22,8 @@ function load_content_pages(){
 
 function open_tab(tab_name){
     document.getElementById("header").innerHTML = "";
-    make_http_request("POST", HOST_URL+'/get_tab', {"tab":tab_name}, load_tab);
+    let token = localStorage.getItem("token");
+    make_http_request("POST", HOST_URL+'/get_tab', {"tab":tab_name,"token":token}, load_tab);
 }
 
 function load_tab(response){

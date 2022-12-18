@@ -18,7 +18,7 @@ body {
     overflow: hidden;
 }
 
-#status_msg, #about_tab, #signin_tab, #signup_tab {
+#status_msg, #about_tab, #home_tab, #signup_tab {
     flex-shrink: 0;
     border-style: solid;
     padding: 5px;
@@ -31,7 +31,7 @@ body {
     flex-flow: row;
 }
 
-#about_tab, #signin_tab, #signup_tab {
+#about_tab, #home_tab, #signup_tab {
     flex-shrink: 0;
     flex-grow: 1;
     background-color: antiquewhite;

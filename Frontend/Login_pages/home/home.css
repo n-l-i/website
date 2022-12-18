@@ -1,4 +1,4 @@
-#signin_tab {
+#home_tab {
     background-color: lightcoral;
 }
 
@@ -11,7 +11,7 @@
     width: 100%;
 }
 
-#input_area, #signin_info {
+#signin_info, #signin_area, #signup_area, #fruits_log {
     flex-shrink: 0;
     border-style: solid;
     padding: 5px;
@@ -19,7 +19,17 @@
     background-color: lightskyblue;
 }
 
-#signin_info {
+#input_area {
+    min-height: 0px;
+    /* flex-grow: 1; */
+    display: flex;
+    flex-direction: row;
+}
+
+#signin_area, #signup_area {
     flex-grow: 1;
-    overflow: scroll;
+}
+
+#fruits_log {
+    flex-grow: 1;
 }

@@ -35,7 +35,8 @@ def get_file(file_path):
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
     tab = str(request.get_json().get("tab"))
-    response = make_response(_get_tab(tab))
+    token = str(request.get_json().get("token"))
+    response = make_response(_get_tab(tab,token))
     return response
 
 @app.route("/sign_in", methods = ["POST"])

@@ -11,8 +11,9 @@ from ...Backend.database_requests import (
 from random import randint
 import pathlib
 
-def get_tab(tab):
-    if tab in ("signin","signup"):
+def get_tab(tab,token):
+    signed_in = is_signed_in(token)["success"]
+    if signed_in:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Login_pages/{tab}/{tab}.html"
     else:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Content_pages/{tab}/{tab}.html"
