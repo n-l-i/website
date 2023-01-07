@@ -5,15 +5,14 @@ from ...Backend.database_requests import (
     delete_token,
     create_user,
     select_password,
-    select_favourite_fruits,
-    init_db
+    select_favourite_fruits
 )
 from random import randint
 import pathlib
 
 def get_tab(tab,token):
-    signed_in = is_signed_in(token)["success"]
-    if signed_in:
+    signed_in = is_signed_in(token)[0]["success"]
+    if not signed_in:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Login_pages/{tab}/{tab}.html"
     else:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Content_pages/{tab}/{tab}.html"
@@ -29,13 +28,13 @@ def sign_in(username,password):
         return {"success": False, "message":"Both email and password need to be provided."},400
     successful,old_password = select_password(username)
     if not successful:
-        return "{}", 500
+        return {}, 500
     if old_password is None or password != old_password:
         return {"success": False, "message": "Wrong username or password."},200
     token = create_token()
     success,_ = create_login(username, token)
     if not success:
-        return "{}", 500
+        return {}, 500
     return {"success": True, "message": "Successfully signed in.", "data": token},200
 
 def sign_out(token):
@@ -43,18 +42,18 @@ def sign_out(token):
         return {"success": False, "message":"Access token needs to be provided."},400
     successful,token_is_valid = is_valid_token(token)
     if not successful:
-        return "{}", 500
+        return {}, 500
     if not token_is_valid:
         return {"success": False, "message": "Access token is not valid."},200
     success = delete_token(token)
     if not success:
-        return "{}", 500
+        return {}, 500
     return {"success": True, "message": "Successfully signed out."},200
 
 def is_signed_in(token):
     success,is_valid = is_valid_token(token)
     if not success:
-        return "{}", 500
+        return {}, 500
     return {"success": is_valid, "message": "Successfully retrieved data."},200
 
 def sign_up(username,password,favourite_fruit):
@@ -64,14 +63,13 @@ def sign_up(username,password,favourite_fruit):
         favourite_fruit = None
     successful,_ = create_user(username, password, favourite_fruit)
     if not successful:
-        return "{}", 500
+        return {}, 500
     return {"success": True, "message": "Successfully signed up."},200
 
 def get_favourite_fruits():
-    init_db()
     successful,fruits = select_favourite_fruits()
     if not successful:
-        return "{}", 500
+        return {}, 500
     return {"success": True, "message": "Successfully retrieved data.","data":fruits},200
 
 def create_token():
@@ -80,8 +78,3 @@ def create_token():
         token += str(randint(0,9))
     return token
 
-def get_users():
-    success,users = select_users()
-    if not success:
-        return "{}", 500
-    return {"success": True, "message": "Successfully retrieved data.", "data": users},200

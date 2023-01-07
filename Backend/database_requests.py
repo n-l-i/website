@@ -24,7 +24,7 @@ def init_db():
     db_connection.execute("CREATE TABLE IF NOT EXISTS users ("+ \
                             "username TEXT NOT NULL,"+ \
                             "password TEXT NOT NULL,"+ \
-                            "favourite_fruit TEXT NOT NULL,"+ \
+                            "favourite_fruit TEXT,"+ \
                             "PRIMARY KEY (username));")
     db_connection.execute("COMMIT;")
     db_connection.execute("BEGIN;")
