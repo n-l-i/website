@@ -1,5 +1,5 @@
 from flask import Flask, request, send_file, make_response
-import pathlib
+from pathlib import Path
 from ..Backend.Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
@@ -23,18 +23,24 @@ _init_db()
 app = Flask(__name__)
 
 @app.route("/", methods = ["GET"])
-def hello():
-    response = make_response(send_file("../Frontend/Landing_page/index.html"))
+def root_page():
+    landing_page = Path(__file__).resolve().parent.parent.joinpath("Frontend/Landing_page/index.html")
+    response = make_response(send_file(landing_page))
     return response
 
 @app.route("/get_file/<path:file_path>", methods = ["GET"])
 def get_file(file_path):
-    response = make_response(send_file(f"../{file_path}"))
+    file_path = Path(__file__).resolve().parent.parent.joinpath(file_path)
+    if (not file_path.is_file()) or Path(__file__).resolve().parent.parent.joinpath("Frontend") not in file_path.parents:
+        return {}, 400
+    response = make_response(send_file(file_path))
     return response
 
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
     tab = str(request.get_json().get("tab"))
+    if tab not in ("about","signin","home","chess_ai","network_simulator","ssl_certs"):
+        return {}, 400
     token = str(request.get_json().get("token"))
     response = make_response(_get_tab(tab,token))
     return response
@@ -100,7 +106,7 @@ def let_ai_make_move():
     response = make_response(_let_ai_make_move(thinking_time))
     return response
 
-SSL_CERT_PATH = f"{pathlib.Path(__file__).parent.parent.resolve()}/SSL_cert"
-ssl_cert = f"{SSL_CERT_PATH}/fullchain.pem"
-ssl_key = f"{SSL_CERT_PATH}/privkey.pem"
+SSL_CERT_PATH = Path(__file__).resolve().parent.parent.joinpath("SSL_cert")
+ssl_cert = SSL_CERT_PATH.joinpath("fullchain.pem")
+ssl_key = SSL_CERT_PATH.joinpath("privkey.pem")
 app.run(debug=True,host='0.0.0.0', port=443, ssl_context=(ssl_cert,ssl_key))
