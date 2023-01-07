@@ -2,16 +2,12 @@ load_login_pages();
 
 function load_login_pages(){
     var newScript = document.createElement("script");
-    newScript.src = HOST_URL+"/get_file/Frontend/Login_pages/home/home.js";
-    document.head.appendChild(newScript);
-    newScript = document.createElement("script");
-    newScript.src = HOST_URL+"/get_file/Frontend/Login_pages/signup/signup.js";
+    newScript.src = HOST_URL+"/get_file/Frontend/Login_pages/signin/signin.js";
     document.head.appendChild(newScript);
     newScript = document.createElement("script");
     newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/about/about.js";
     document.head.appendChild(newScript);
-    document.getElementById("status_msg").innerHTML = "loaded page";
-    open_tab("home");
+    open_tab("signin");
 }
 
 function open_tab(tab_name){
@@ -20,7 +16,7 @@ function open_tab(tab_name){
 
 function load_tab(response){
   document.getElementById("tab_content").innerHTML = response.data.html;
-  if (response.data.tab_name === "home") {
+  if (response.data.tab_name === "signin") {
     list_favourite_fruits();
   }
 }
@@ -43,4 +39,11 @@ function make_http_request(method,url,data,onload){
     xmlhttp.setRequestHeader('Content-type', 'application/json')
     request_body = JSON.stringify(data);
     xmlhttp.send(request_body);
+}
+
+function show_status_message(message) {
+    document.getElementById("status_msg_text").innerHTML = message;
+    document.getElementById("status_msg").classList.toggle('visible');
+    document.getElementById("tabs").classList.toggle('blurred');
+    document.getElementById("tab_content").classList.toggle('blurred');
 }

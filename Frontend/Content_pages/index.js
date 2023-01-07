@@ -16,12 +16,10 @@ function load_content_pages(){
     newScript = document.createElement("script");
     newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/about/about.js";
     document.head.appendChild(newScript);
-    document.getElementById("status_msg").innerHTML = "loaded page";
     open_tab("home");
 }
 
 function open_tab(tab_name){
-    document.getElementById("header").innerHTML = "";
     let token = localStorage.getItem("token");
     make_http_request("POST", HOST_URL+'/get_tab', {"tab":tab_name,"token":token}, load_tab);
 }
@@ -59,15 +57,18 @@ function sign_out() {
 }
 
 function load_sign_out(response){
-    if (response.status_code !== 200) {
-        document.getElementById("status_msg").innerHTML = "request failed";
-        return;
-    }
-    if (response.success !== true) {
-        document.getElementById("status_msg").innerHTML = "sign out failed";
+    if (response.status_code !== 200 || response.success !== true) {
+        show_status_message(response.message);
         return;
     }
     localStorage.removeItem("token");
-    document.getElementById("status_msg").innerHTML = "sign out successful";
     window.location.reload();
+}
+
+function show_status_message(message) {
+    document.getElementById("status_msg_text").innerHTML = message;
+    document.getElementById("status_msg").classList.toggle('visible');
+    document.getElementById("tabs").classList.toggle('blurred');
+    document.getElementById("tab_content").classList.toggle('blurred');
+    document.getElementById("header").classList.toggle('blurred');
 }

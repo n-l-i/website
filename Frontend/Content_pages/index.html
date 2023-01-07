@@ -6,7 +6,6 @@
     <link href="get_file/Frontend/Content_pages/index.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <div id="status_msg"></div>
     <div id="tabs">
         <div id="signout_button" onclick="sign_out();">Sign out</div>
         <div id="about_tab" onclick="open_tab('about');">About</div>
@@ -15,7 +14,12 @@
         <div id="ssl_certs_tab" onclick="open_tab('ssl_certs');">CT monitor [WIP]</div>
         <div id="network_simulator_tab" onclick="open_tab('network_simulator');">Network Simulator [WIP]</div>
     </div>
-    <div id="header"></div>
     <div id="tab_content"></div>
+    <div id="status_msg">
+        <div id="status_msg_box">
+            <div id="status_msg_text"></div>
+            <div id="status_msg_ack" onclick="show_status_message('');">Ok</div>
+        </div>
+    </div>
 </body>
 </html>

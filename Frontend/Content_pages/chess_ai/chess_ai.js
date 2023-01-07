@@ -24,12 +24,8 @@ function select_mode(){
     make_http_request('POST', HOST_URL+'/select_mode', {"mode":mode}, change_mode)
 }
 function change_mode(response){
-    if (response.status_code !== 200) {
-        document.getElementById("status_msg").innerHTML = "mode request failed";
-        return;
-    }
-    if (response.success !== true) {
-        document.getElementById("status_msg").innerHTML = response.message;
+    if (response.status_code !== 200 || response.success !== true) {
+        show_status_message(response.message);
         return;
     }
     select_colour();
@@ -46,12 +42,8 @@ function select_colour(){
 }
 
 function display_board(response){
-    if (response.status_code !== 200) {
-        document.getElementById("status_msg").innerHTML = "move request failed";
-        return;
-    }
-    if (response.success !== true) {
-        document.getElementById("status_msg").innerHTML = response.message;
+    if (response.status_code !== 200 || response.success !== true) {
+        show_status_message(response.message);
         return;
     }
     if (String(localStorage.getItem("turn")) != "white") {
@@ -61,7 +53,6 @@ function display_board(response){
     }
     render_board(response.data.board,response.data.move);
     localStorage.setItem("legal_moves",response.data.legal_moves);
-    document.getElementById("status_msg").innerHTML = "move request successful";
     if (typeof response.data.move != "undefined"){
         let move = response.data.move.slice(0,2)+"&#8594;"+response.data.move.slice(2);
         let last_move_row = String(document.getElementById("move_stack").innerHTML).split("<br>")[0];

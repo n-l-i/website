@@ -1,3 +1,11 @@
+#header {
+    flex-shrink: 0;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightskyblue;
+}
+
 #chess_ai_tab {
     background-color: lightcoral;
 }
@@ -12,6 +20,7 @@
     flex-direction: row;
     height: 100%;
     width: 100%;
+    padding-bottom: 65px;
 }
 
 #input_area {

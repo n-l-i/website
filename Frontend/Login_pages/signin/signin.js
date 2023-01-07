@@ -1,40 +1,30 @@
 function sign_in() {
-    email = document.getElementById("email_input").value;
-    password = document.getElementById("password_input").value;
+    email = document.getElementById("signin_email_input").value;
+    password = document.getElementById("signin_password_input").value;
     make_http_request('POST', HOST_URL+'/sign_in', {"username":email,"password":password}, load_sign_in);
 }
 
 function load_sign_in(response){
-    if (response.status_code !== 200) {
-        document.getElementById("status_msg").innerHTML = "request failed";
-        return;
-    }
-    if (response.success !== true) {
-        document.getElementById("status_msg").innerHTML = "login failed";
+    if (response.status_code !== 200 || response.success !== true) {
+        show_status_message(response.message);
         return;
     }
     localStorage.setItem("token",response.data);
-    document.getElementById("status_msg").innerHTML = "login successful";
     window.location.reload();
 }
 
 function sign_up() {
-    email = document.getElementById("email_input").value;
-    password = document.getElementById("password_input").value;
-    fruit = document.getElementById("fruit_input").value;
+    email = document.getElementById("signup_email_input").value;
+    password = document.getElementById("signup_password_input").value;
+    fruit = document.getElementById("signup_fruit_input").value;
     make_http_request('POST', HOST_URL+'/sign_up', {"username":email,"password":password,"favourite_fruit":fruit}, load_sign_up);
 }
 
 function load_sign_up(response){
-    if (response.status_code !== 200) {
-        document.getElementById("status_msg").innerHTML = "request failed";
+    if (response.status_code !== 200 || response.success !== true) {
+        show_status_message(response.message);
         return;
     }
-    if (response.success !== true) {
-        document.getElementById("status_msg").innerHTML = "signup failed";
-        return;
-    }
-    document.getElementById("status_msg").innerHTML = "signup successful";
     list_favourite_fruits();
 }
 
@@ -45,11 +35,11 @@ function list_favourite_fruits(){
     }
     response = arguments[0];
     if (response.status_code !== 200) {
-        document.getElementById("status_msg").innerHTML = "request failed";
+        document.getElementById("fruits_log").innerHTML = "Failed to fetch list of common favourite fruits from the server.";
         return;
     }
     if (response.success !== true) {
-        document.getElementById("status_msg").innerHTML = "request failed";
+        document.getElementById("fruits_log").innerHTML = "Failed to fetch list of common favourite fruits from the server.";
         return;
     }
     document.getElementById("fruits_log").innerHTML = "Some fruits other users like:";
