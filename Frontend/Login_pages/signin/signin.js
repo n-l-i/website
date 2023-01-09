@@ -1,6 +1,14 @@
 function sign_in() {
     email = document.getElementById("signin_email_input").value;
     password = document.getElementById("signin_password_input").value;
+    if (email.length === 0 || password.length === 0) {
+        show_status_message("Both email and password need to be provided.");
+        return;
+    }
+    if (email.length < 3 || !email.includes("@") || password.length < 12) {
+        show_status_message("Wrong username or password.");
+        return;
+    }
     make_http_request('POST', HOST_URL+'/sign_in', {"username":email,"password":password}, load_sign_in);
 }
 
@@ -16,7 +24,28 @@ function load_sign_in(response){
 function sign_up() {
     email = document.getElementById("signup_email_input").value;
     password = document.getElementById("signup_password_input").value;
+    repeat_password = document.getElementById("signup_repeat_password_input").value;
     fruit = document.getElementById("signup_fruit_input").value;
+    if (email.length === 0 || password.length === 0) {
+        show_status_message("Both email and password need to be provided.");
+        return;
+    }
+    if (email.length < 3 || !email.includes("@")) {
+        show_status_message("A valid email needs to be provided.");
+        return;
+    }
+    if (password.length < 12) {
+        show_status_message("Password needs to be at least 12 characters long.");
+        return;
+    }
+    if (password !== repeat_password) {
+        show_status_message("The passwords do not match each other.");
+        return;
+    }
+    if (fruit.length > 32) {
+        show_status_message("The name of this fruit is too long.");
+        return;
+    }
     make_http_request('POST', HOST_URL+'/sign_up', {"username":email,"password":password,"favourite_fruit":fruit}, load_sign_up);
 }
 

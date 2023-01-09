@@ -1,4 +1,5 @@
 from time import sleep
+from string import punctuation
 from ...Backend.database_requests import (
     create_login,
     is_valid_token,
@@ -11,6 +12,8 @@ from random import randint
 import pathlib
 
 def get_tab(tab,token):
+    if len(tab) == 0 or len(token) == 0:
+        return {"success": False, "message":"Both tab name and access token need to be provided."},400
     signed_in = is_signed_in(token)[0]["success"]
     if not signed_in:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Login_pages/{tab}/{tab}.html"
@@ -51,6 +54,8 @@ def sign_out(token):
     return {"success": True, "message": "Successfully signed out."},200
 
 def is_signed_in(token):
+    if len(token) == 0:
+        return {"success": False, "message":"Access token needs to be provided."},400
     success,is_valid = is_valid_token(token)
     if not success:
         return {}, 500
@@ -59,6 +64,14 @@ def is_signed_in(token):
 def sign_up(username,password,favourite_fruit):
     if len(username) == 0 or len(password) == 0:
         return {"success": False, "message":"Both email and password need to be provided."},400
+    if username.count("@") != 1 or "" in username.split("@"):
+        return {"success": False, "message":"A valid email needs to be provided."},400
+    if len(password) < 12:
+        return {"success": False, "message":"Password needs to be at least 12 characters long."},400
+    if len(favourite_fruit) > 32:
+        return {"success": False, "message":"The name of this fruit is too long."},400
+    if any(c in punctuation and c not in " -()" for c in favourite_fruit):
+        return {"success": False, "message":"Not a valid fruit name."},400
     if len(favourite_fruit) == 0:
         favourite_fruit = None
     successful,_ = create_user(username, password, favourite_fruit)
