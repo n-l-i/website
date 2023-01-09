@@ -22,6 +22,14 @@ _init_db()
 
 app = Flask(__name__)
 
+@app.errorhandler(Exception)
+def error_generic(e):
+    return {},500
+
+@app.errorhandler(404)
+def error_404(e):
+    return {},404
+
 @app.route("/", methods = ["GET"])
 def root_page():
     landing_page = Path(__file__).resolve().parent.parent.joinpath("Frontend/Landing_page/index.html")

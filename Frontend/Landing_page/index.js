@@ -37,10 +37,11 @@ function make_http_request(method,url,data,onload){
     xmlhttp.open(method, url, true);
 
     xmlhttp.onload = function () {
-        console.log(xmlhttp.response);
-        let success = JSON.parse(xmlhttp.response).success === true;
-        let message = JSON.parse(xmlhttp.response).message;
-        let data = JSON.parse(xmlhttp.response).data;
+        let response = JSON.parse(xmlhttp.response);
+        let success = response.success === true;
+        let message = ("message" in response) ?
+            response.message : "The http request failed with status code: "+xmlhttp.status+".";
+        let data = response.data;
         onload({"status_code":xmlhttp.status,"success":success,"message":message,"data":data});
     };
     xmlhttp.timeout = 300000;
