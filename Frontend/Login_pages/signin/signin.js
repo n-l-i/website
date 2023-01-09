@@ -25,6 +25,7 @@ function load_sign_up(response){
         show_status_message(response.message);
         return;
     }
+    show_status_message(response.message,false);
     list_favourite_fruits();
 }
 

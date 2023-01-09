@@ -65,8 +65,13 @@ function load_sign_out(response){
     window.location.reload();
 }
 
-function show_status_message(message) {
+function show_status_message(message,is_warning = true) {
     document.getElementById("status_msg_text").innerHTML = message;
+    if (is_warning){
+        document.getElementById("status_msg_box").classList.add('warning');
+    } else {
+        document.getElementById("status_msg_box").classList.remove('warning');
+    }
     document.getElementById("status_msg").classList.toggle('visible');
     document.getElementById("tabs").classList.toggle('blurred');
     document.getElementById("tab_content").classList.toggle('blurred');

@@ -27,6 +27,10 @@ body {
 }
 
 #status_msg_box {
+    background-color: antiquewhite;
+}
+
+#status_msg_box.warning {
     background-color: lightcoral;
 }
 
