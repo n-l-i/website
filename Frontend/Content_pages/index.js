@@ -31,26 +31,6 @@ function load_tab(response){
     }
 }
 
-function make_http_request(method,url,data,onload){
-    let xmlhttp = new XMLHttpRequest();
-    xmlhttp.open(method, url, true);
-
-    xmlhttp.onload = function () {
-        let success = JSON.parse(xmlhttp.response).success === true;
-        let message = JSON.parse(xmlhttp.response).message;
-        let data = JSON.parse(xmlhttp.response).data;
-        onload({"status_code":xmlhttp.status,"success":success,"message":message,"data":data});
-    };
-    xmlhttp.timeout = 300000;
-    xmlhttp.ontimeout = function (e) {
-        onload({"status_code":xmlhttp.status,"success":false,"message":"Request timed out.","data":null});
-    };
-
-    xmlhttp.setRequestHeader('Content-type', 'application/json')
-    request_body = JSON.stringify(data);
-    xmlhttp.send(request_body);
-}
-
 function sign_out() {
     token = localStorage.getItem("token");
     make_http_request('POST', HOST_URL+'/sign_out', {"token":token}, load_sign_out)
@@ -63,17 +43,4 @@ function load_sign_out(response){
     }
     localStorage.removeItem("token");
     window.location.reload();
-}
-
-function show_status_message(message,is_warning = true) {
-    document.getElementById("status_msg_text").innerHTML = message;
-    if (is_warning){
-        document.getElementById("status_msg_box").classList.add('warning');
-    } else {
-        document.getElementById("status_msg_box").classList.remove('warning');
-    }
-    document.getElementById("status_msg").classList.toggle('visible');
-    document.getElementById("tabs").classList.toggle('blurred');
-    document.getElementById("tab_content").classList.toggle('blurred');
-    document.getElementById("header").classList.toggle('blurred');
 }

@@ -37,6 +37,7 @@ function make_http_request(method,url,data,onload){
     xmlhttp.open(method, url, true);
 
     xmlhttp.onload = function () {
+        console.log(xmlhttp.response);
         let success = JSON.parse(xmlhttp.response).success === true;
         let message = JSON.parse(xmlhttp.response).message;
         let data = JSON.parse(xmlhttp.response).data;
@@ -50,4 +51,16 @@ function make_http_request(method,url,data,onload){
     xmlhttp.setRequestHeader('Content-type', 'application/json')
     request_body = JSON.stringify(data);
     xmlhttp.send(request_body);
+}
+
+function show_status_message(message,is_warning = true) {
+    document.getElementById("status_msg_text").innerHTML = message;
+    if (is_warning){
+        document.getElementById("status_msg_box").classList.add('warning');
+    } else {
+        document.getElementById("status_msg_box").classList.remove('warning');
+    }
+    document.getElementById("status_msg").classList.toggle('visible');
+    document.getElementById("tabs").classList.toggle('blurred');
+    document.getElementById("tab_content").classList.toggle('blurred');
 }
