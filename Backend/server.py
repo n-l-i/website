@@ -1,5 +1,7 @@
 from flask import Flask, request, send_file, make_response
 from pathlib import Path
+import json
+from datetime import datetime
 from .Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
@@ -24,12 +26,57 @@ def get_app():
     _init_db()
     return app
 
+LOGS_DIR = Path(__file__).resolve().parent.parent.joinpath("Log")
+
+@app.before_request
+def before_request():
+    request.arrival_time = datetime.now().strftime("%y%m%d-%H:%M:%S.%f")[:18]
+    try:
+        data = json.dumps(request.get_json())
+    except:
+        data = "{}"
+    with open(LOGS_DIR.joinpath("all_requests.txt"),"a") as log_file:
+        log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.environ['HTTP_CF_CONNECTING_IP']}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
+        log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
+        log_file.write(log_entry+"\n")
+
+@app.after_request
+def after_request(response):
+    request.departure_time = datetime.now().strftime("%y%m%d-%H:%M:%S.%f")[:18]
+    try:
+        request_data = json.dumps(request.get_json())
+    except:
+        request_data = "{}"
+    try:
+        response_data = json.dumps(response.get_json())
+    except:
+        response_data = "{}"
+    if response.status_code < 400:
+        with open(LOGS_DIR.joinpath("successful_requests.txt"),"a") as log_file:
+            log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{request.environ['HTTP_CF_CONNECTING_IP']}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}"
+            log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
+            log_file.write(log_entry+"\n")
+    else:
+        try:
+            error_description = str(request.error)
+            error_type = type(request.error).__name__
+        except:
+            error_description = ""
+            error_type = ""
+        with open(LOGS_DIR.joinpath("failed_requests.txt"),"a") as log_file:
+            log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{request.environ['HTTP_CF_CONNECTING_IP']}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
+            log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
+            log_file.write(log_entry+"\n")
+    return response
+
 @app.errorhandler(Exception)
 def error_generic(e):
+    request.error = e
     return make_response({}, 500)
 
 @app.errorhandler(404)
 def error_404(e):
+    request.error = e
     if request.url in ("https://josefine.dev/favicon.ico",
                        "https://josefine.dev/apple-touch-icon.png",
                        "https://josefine.dev/apple-touch-icon-precomposed.png"):
