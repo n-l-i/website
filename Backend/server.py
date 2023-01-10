@@ -28,6 +28,10 @@ def error_generic(e):
 
 @app.errorhandler(404)
 def error_404(e):
+    if request.url in ("https://josefine.dev/favicon.ico",
+                       "https://josefine.dev/apple-touch-icon.png",
+                       "https://josefine.dev/apple-touch-icon-precomposed.png"):
+        return make_response({}, 204)
     return make_response({}, 404)
 
 @app.route("/", methods = ["GET"])
