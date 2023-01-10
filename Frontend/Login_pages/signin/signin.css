@@ -26,6 +26,16 @@
     flex-direction: row;
 }
 
+#input_area input {
+    min-width: 100%;
+    width: 0px;
+}
+
+#input_area .button {
+    min-width: 10ch;
+    width: 10ch;
+}
+
 #signin_area, #signup_area {
     flex-grow: 1;
 }
