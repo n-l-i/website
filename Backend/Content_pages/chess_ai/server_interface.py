@@ -41,7 +41,7 @@ def make_move(move):
     except ValueError:
         return {"success": False,"message":"Not a valid move."},200
     except:
-        return {"success": False,"message":"Internal server error."+str(e)},500
+        return {"success": False,"message":"Internal server error."},500
     if board.outcome() is not None:
         end_reason = str(board.outcome().termination).replace("Termination.","")
         end_reason = end_reason[0].upper()+end_reason[1:].lower()
@@ -60,10 +60,8 @@ def let_ai_make_move(thinking_time):
     try:
         ai_move = get_ai_move(board,thinking_time).uci()
         push_move(board,ai_move)
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return {"success": False,"message":"Internal server error."+str(e)},500
+    except:
+        return {"success": False,"message":"Internal server error."},500
     if board.outcome() is not None:
         end_reason = str(board.outcome().termination).replace("Termination.","")
         end_reason = end_reason[0].upper()+end_reason[1:].lower()
