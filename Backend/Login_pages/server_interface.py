@@ -1,6 +1,6 @@
 from time import sleep
 from string import punctuation
-from ...Backend.database_requests import (
+from ..database_requests import (
     create_login,
     is_valid_token,
     delete_token,

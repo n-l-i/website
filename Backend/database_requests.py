@@ -48,8 +48,7 @@ def create_user(username, password, favourite_fruit):
         return (True,None)
     except IntegrityError:
         return (True,None)
-    except Exception as e:
-        print(e)
+    except:
         return (False,None)
 
 def create_login(username, token):

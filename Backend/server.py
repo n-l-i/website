@@ -1,6 +1,6 @@
 from flask import Flask, request, send_file, make_response
 from pathlib import Path
-from ..Backend.Login_pages.server_interface import (
+from .Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
     sign_out as _sign_out,
@@ -8,19 +8,21 @@ from ..Backend.Login_pages.server_interface import (
     sign_up as _sign_up,
     get_favourite_fruits as _get_favourite_fruits
 )
-from ..Backend.Content_pages.chess_ai.server_interface import (
+from .Content_pages.chess_ai.server_interface import (
     select_mode as _select_mode,
     select_colour as _select_colour,
     make_move as _make_move,
     let_ai_make_move as _let_ai_make_move
 )
-from ..Backend.database_requests import (
+from .database_requests import (
     init_db as _init_db
 )
 
-_init_db()
-
 app = Flask(__name__)
+
+def get_app():
+    _init_db()
+    return app
 
 @app.errorhandler(Exception)
 def error_generic(e):
@@ -104,8 +106,3 @@ def make_move():
 def let_ai_make_move():
     thinking_time = int(str(request.get_json().get("thinking_time")))
     return make_response(_let_ai_make_move(thinking_time))
-
-SSL_CERT_PATH = Path(__file__).resolve().parent.parent.joinpath("SSL_cert")
-ssl_cert = SSL_CERT_PATH.joinpath("fullchain.pem")
-ssl_key = SSL_CERT_PATH.joinpath("privkey.pem")
-app.run(debug=True,host='0.0.0.0', port=5000, ssl_context=(ssl_cert,ssl_key))
