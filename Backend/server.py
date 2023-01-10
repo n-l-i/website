@@ -1,7 +1,9 @@
-from flask import Flask, request, send_file, make_response
+from flask import Flask, request, send_file, make_response, session
 from pathlib import Path
 import json
 from datetime import datetime
+from string import ascii_letters
+from random import choice
 from .Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
@@ -24,6 +26,7 @@ app = Flask(__name__)
 
 def get_app():
     _init_db()
+    app.secret_key = "".join([choice(ascii_letters) for _ in range(20)])
     return app
 
 LOGS_DIR = Path(__file__).resolve().parent.parent.joinpath("Log")
@@ -137,19 +140,19 @@ def get_favourite_fruits():
 @app.route("/select_mode", methods = ["POST"])
 def select_mode():
     mode = str(request.get_json().get("mode")).lower()
-    return make_response(_select_mode(mode))
+    return make_response(_select_mode(mode,session))
 
 @app.route("/select_colour", methods = ["POST"])
 def select_colour():
     colour = str(request.get_json().get("colour")).lower()
-    return make_response(_select_colour(colour))
+    return make_response(_select_colour(colour,session))
 
 @app.route("/make_move", methods = ["POST"])
 def make_move():
     move = str(request.get_json().get("move")).lower()
-    return make_response(_make_move(move))
+    return make_response(_make_move(move,session))
 
 @app.route("/let_ai_make_move", methods = ["POST"])
 def let_ai_make_move():
     thinking_time = int(str(request.get_json().get("thinking_time")))
-    return make_response(_let_ai_make_move(thinking_time))
+    return make_response(_let_ai_make_move(thinking_time,session))
