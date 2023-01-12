@@ -38,8 +38,12 @@ def before_request():
         data = json.dumps(request.get_json())
     except:
         data = "{}"
+    if "HTTP_CF_CONNECTING_IP" in request.environ:
+        origin_ip = request.environ['HTTP_CF_CONNECTING_IP']
+    else:
+        origin_ip = request.environ['HTTP_X_REAL_IP']
     with open(LOGS_DIR.joinpath("all_requests.txt"),"a") as log_file:
-        log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.environ['HTTP_CF_CONNECTING_IP']}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
+        log_entry = f"{request.arrival_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
         log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
         log_file.write(log_entry+"\n")
 
@@ -54,9 +58,14 @@ def after_request(response):
         response_data = json.dumps(response.get_json())
     except:
         response_data = "{}"
+    if "HTTP_CF_CONNECTING_IP" in request.environ:
+        origin_ip = request.environ['HTTP_CF_CONNECTING_IP']
+    else:
+        origin_ip = request.environ['HTTP_X_REAL_IP']
+        response = make_response({}, 404)
     if response.status_code < 400:
         with open(LOGS_DIR.joinpath("successful_requests.txt"),"a") as log_file:
-            log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{request.environ['HTTP_CF_CONNECTING_IP']}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}"
+            log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}"
             log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
             log_file.write(log_entry+"\n")
     else:
@@ -66,10 +75,16 @@ def after_request(response):
         except:
             error_description = ""
             error_type = ""
-        with open(LOGS_DIR.joinpath("failed_requests.txt"),"a") as log_file:
-            log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{request.environ['HTTP_CF_CONNECTING_IP']}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
-            log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
-            log_file.write(log_entry+"\n")
+        if "HTTP_CF_CONNECTING_IP" in request.environ:
+            with open(LOGS_DIR.joinpath("failed_requests.txt"),"a") as log_file:
+                log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
+                log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
+                log_file.write(log_entry+"\n")
+        else:
+            with open(LOGS_DIR.joinpath("non_proxied_requests.txt"),"a") as log_file:
+                log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
+                log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
+                log_file.write(log_entry+"\n")
     return response
 
 @app.errorhandler(Exception)
