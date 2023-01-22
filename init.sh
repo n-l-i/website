@@ -23,10 +23,6 @@ done
 [[ -z "$dev_mode" && -z "$production_mode" ]] && print_usage_instructions && exit 1
 [[ ! -z "$dev_mode" && ! -z "$production_mode" ]] && print_usage_instructions && exit 1
 [[ -z "$website_url" ]] && print_usage_instructions && exit 1
-if [[ "$website_url" != *?"."?* ]]; then
-    echo "Error: URL \"$website_url\" is not a valid URL."
-    exit 1
-fi
 if [[ "$website_url" != *"://"* ]]; then
     website_url="https://$website_url"
 fi
@@ -53,7 +49,6 @@ fi
 ) && (
     if [[ ! -z "$production_mode" ]]; then
         cd $website_directory && \
-        python3 -m venv venv && \
         source venv/bin/activate && \
         pip3 install gunicorn
     fi

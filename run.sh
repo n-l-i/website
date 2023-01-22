@@ -37,7 +37,8 @@ done
     else
         cd "$website_directory" && \
         source venv/bin/activate && \
-        flask run --host 0.0.0.0 \
+        flask -- app Backend.server \
+              run --host 0.0.0.0 \
                   --port 5001 \
                   --debugger
     fi
