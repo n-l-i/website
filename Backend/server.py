@@ -18,14 +18,10 @@ from .Content_pages.chess_ai.server_interface import (
     make_move as _make_move,
     let_ai_make_move as _let_ai_make_move
 )
-from .database_requests import (
-    init_db as _init_db
-)
 
 app = Flask(__name__)
 
 def get_app():
-    _init_db()
     app.secret_key = "".join([choice(ascii_letters) for _ in range(20)])
     return app
 

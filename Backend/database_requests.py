@@ -143,8 +143,6 @@ def select_favourite_fruits():
                                  ORDER BY RANDOM();""")
         fruits = db_connection.fetchall()
         _close_connection(db_connection)
-        if fruits is None:
-            return (True,None)
         return (True,fruits)
     except:
         return (False,None)
