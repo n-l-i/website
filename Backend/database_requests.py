@@ -88,6 +88,8 @@ def update_token(token):
         return False
 
 def is_valid_token(token):
+    if token is None:
+        return (True,False)
     try:
         current_time = int(time())
         db_connection = _open_connection()

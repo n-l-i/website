@@ -12,9 +12,13 @@ from random import randint
 import pathlib
 
 def get_tab(tab,token):
-    if len(tab) == 0 or len(token) == 0:
-        return {"success": False, "message":"Both tab name and access token need to be provided."},400
-    signed_in = is_signed_in(token)[0]["success"]
+    if not tab:
+        return {"success": False, "message":"Tab name needs to be provided.", "data": {}},400
+    if token:
+        result = is_signed_in(token)[0]
+        signed_in = result["success"] and result["data"]
+    else:
+        signed_in = False
     if not signed_in:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Login_pages/{tab}/{tab}.html"
     else:
@@ -27,7 +31,7 @@ def get_tab(tab,token):
         return {"success":False,"message":None},500
 
 def sign_in(username,password):
-    if len(username) == 0 or len(password) == 0:
+    if (not username) or (not password):
         return {"success": False, "message":"Both email and password need to be provided."},400
     successful,old_password = select_password(username)
     if not successful:
@@ -54,12 +58,12 @@ def sign_out(token):
     return {"success": True, "message": "Successfully signed out."},200
 
 def is_signed_in(token):
-    if len(token) == 0:
-        return {"success": False, "message":"Access token needs to be provided."},400
+    if not token:
+        return {"success": True, "data": False, "message": "Successfully retrieved data."},200
     success,is_valid = is_valid_token(token)
     if not success:
         return {}, 500
-    return {"success": is_valid, "message": "Successfully retrieved data."},200
+    return {"success": True, "data": is_valid, "message": "Successfully retrieved data."},200
 
 def sign_up(username,password,favourite_fruit):
     if len(username) == 0 or len(password) == 0:

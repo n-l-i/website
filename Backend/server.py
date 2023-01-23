@@ -40,8 +40,10 @@ def before_request():
         data = "{}"
     if "HTTP_CF_CONNECTING_IP" in request.environ:
         origin_ip = request.environ['HTTP_CF_CONNECTING_IP']
-    else:
+    elif "HTTP_X_REAL_IP" in request.environ:
         origin_ip = request.environ['HTTP_X_REAL_IP']
+    else:
+        origin_ip = request.remote_addr
     with open(LOGS_DIR.joinpath("all_requests.txt"),"a") as log_file:
         log_entry = f"{request.arrival_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
         log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
@@ -60,9 +62,13 @@ def after_request(response):
         response_data = "{}"
     if "HTTP_CF_CONNECTING_IP" in request.environ:
         origin_ip = request.environ['HTTP_CF_CONNECTING_IP']
-    else:
+    elif "HTTP_X_REAL_IP" in request.environ:
         origin_ip = request.environ['HTTP_X_REAL_IP']
         response = make_response({}, 404)
+    else:
+        origin_ip = request.remote_addr
+        if origin_ip != "127.0.0.1":
+            response = make_response({}, 404)
     if response.status_code < 400:
         with open(LOGS_DIR.joinpath("successful_requests.txt"),"a") as log_file:
             log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}"
@@ -85,6 +91,10 @@ def after_request(response):
                 log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
                 log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
                 log_file.write(log_entry+"\n")
+    if response.get_json():
+        assert "success" in response.get_json(), (request.get_json(),response.get_json())
+        assert "message" in response.get_json(), (request.get_json(),response.get_json())
+        assert "data" in response.get_json(), (request.get_json(),response.get_json())
     return response
 
 @app.errorhandler(Exception)
@@ -107,6 +117,7 @@ def root_page():
 
 @app.route("/get_file/<path:file_path>", methods = ["GET"])
 def get_file(file_path):
+    assert isinstance(file_path,str)
     file_path = Path(__file__).resolve().parent.parent.joinpath(file_path)
     if (not file_path.is_file()) or Path(__file__).resolve().parent.parent.joinpath("Frontend") not in file_path.parents:
         return make_response({}, 400)
@@ -117,31 +128,39 @@ def get_tab():
     tab = str(request.get_json().get("tab"))
     if tab not in ("about","signin","home","chess_ai","network_simulator","ssl_certs"):
         return make_response({}, 400)
-    token = str(request.get_json().get("token"))
+    token = request.get_json().get("token")
+    assert isinstance(token,str) or token is None
     return make_response(_get_tab(tab,token))
 
 @app.route("/sign_in", methods = ["POST"])
 def sign_in():
-    username = str(request.get_json().get("username"))
-    password = str(request.get_json().get("password"))
+    username = request.get_json().get("username")
+    assert isinstance(username,str) or username is None
+    password = request.get_json().get("password")
+    assert isinstance(password,str) or password is None
     return make_response(_sign_in(username,password))
 
 @app.route("/sign_out", methods = ["POST"])
 def sign_out():
-    token = str(request.get_json().get("token"))
+    token = request.get_json().get("token")
+    assert isinstance(token,str) or token is None
     response = make_response(_sign_out(token))
     return response
 
 @app.route("/is_signed_in", methods = ["POST"])
 def is_signed_in():
-    token = str(request.get_json().get("token"))
+    token = request.get_json().get("token")
+    assert isinstance(token,str) or token is None
     return make_response(_is_signed_in(token))
 
 @app.route("/sign_up", methods = ["POST"])
 def sign_up():
-    username = str(request.get_json().get("username"))
-    password = str(request.get_json().get("password"))
-    favourite_fruit = str(request.get_json().get("favourite_fruit"))
+    username = request.get_json().get("username")
+    assert isinstance(username,str) or username is None
+    password = request.get_json().get("password")
+    assert isinstance(password,str) or password is None
+    favourite_fruit = request.get_json().get("favourite_fruit")
+    assert isinstance(favourite_fruit,str) or favourite_fruit is None
     return make_response(_sign_up(username,password,favourite_fruit))
 
 @app.route("/signups", methods = ["GET"])
