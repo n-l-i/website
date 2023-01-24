@@ -22,6 +22,7 @@ done
 
 (
     cd "$website_directory" && \
+    curl -X GET "https://api.cloudflare.com/client/v4/ips" > Backend/cloudflare_ips.json && \
     source venv/bin/activate && \
     python3 -m Backend.fetch_repos
 ) && (

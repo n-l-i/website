@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 from string import ascii_letters
 from random import choice
+from ipaddress import ip_address, ip_network
+from functools import lru_cache
 from .Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
@@ -20,26 +22,44 @@ from .Content_pages.chess_ai.server_interface import (
 )
 
 app = Flask(__name__)
+app.secret_key = "".join([choice(ascii_letters) for _ in range(20)])
 
 def get_app():
-    app.secret_key = "".join([choice(ascii_letters) for _ in range(20)])
     return app
 
 LOGS_DIR = Path(__file__).resolve().parent.parent.joinpath("Log")
+BACKEND_DIR = Path(__file__).resolve().parent
+
+def is_proxied(http_request):
+    for network in cloudflare_ips():
+        if ip_address(http_request.remote_addr) in ip_network(network):
+            return True
+    return False
+
+@lru_cache(maxsize=None)
+def cloudflare_ips():
+    with open(BACKEND_DIR.joinpath("cloudflare_ips.json")) as file_obj:
+        ips = json.load(file_obj)["result"]
+    ips = ips["ipv4_cidrs"]+ips["ipv6_cidrs"]
+    return ips
+
+def get_origin_ip(http_request):
+    trusted_proxies = {'127.0.0.1'}
+    for addr in reversed(http_request.access_route):
+        if addr not in trusted_proxies:
+            return addr
+    return http_request.remote_addr
 
 @app.before_request
 def before_request():
     request.arrival_time = datetime.now().strftime("%y%m%d-%H:%M:%S.%f")[:18]
+    if request.remote_addr != "127.0.0.1" and not is_proxied(request):
+        return make_response({}, 404)
     try:
         data = json.dumps(request.get_json())
     except:
         data = "{}"
-    if "HTTP_CF_CONNECTING_IP" in request.environ:
-        origin_ip = request.environ['HTTP_CF_CONNECTING_IP']
-    elif "HTTP_X_REAL_IP" in request.environ:
-        origin_ip = request.environ['HTTP_X_REAL_IP']
-    else:
-        origin_ip = request.remote_addr
+    origin_ip = get_origin_ip(request)
     with open(LOGS_DIR.joinpath("all_requests.txt"),"a") as log_file:
         log_entry = f"{request.arrival_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
         log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
