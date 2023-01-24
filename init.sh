@@ -45,13 +45,19 @@ fi
     cd $website_directory && \
     python3 -m venv venv && \
     source venv/bin/activate && \
-    pip3 install -r Backend/requirements.txt && \
+    python3 -m pip install -r Backend/requirements.txt && \
     python3 -c "from Backend.database_requests import init_db;init_db()"
+) && (
+    if [[ ! -z "$dev_mode" ]]; then
+        cd $website_directory && \
+        source venv/bin/activate && \
+        python3 -m pip install cryptography
+    fi
 ) && (
     if [[ ! -z "$production_mode" ]]; then
         cd $website_directory && \
         source venv/bin/activate && \
-        pip3 install gunicorn
+        python3 -m pip install gunicorn
     fi
 ) && (
     cd $website_directory && \
