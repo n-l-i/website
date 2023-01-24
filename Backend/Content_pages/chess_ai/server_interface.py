@@ -22,9 +22,15 @@ def select_mode(new_mode,session):
         session["mode"] = "ai_vs_human"
     board = Board(session["board"])
     if new_mode not in ("ai_vs_human","human_vs_human","ai_vs_ai"):
-        return {"success": False,"message":"Not a valid game mode."},400
+        return {"success": False,
+                "message":"Not a valid game mode.",
+                "data":{}
+                },400
     session["mode"] = new_mode
-    return {"success": True},200
+    return {"success": True,
+            "message":None,
+            "data":{}
+            },200
 
 def select_colour(colour,session):
     if "mode" not in session:
@@ -32,12 +38,18 @@ def select_colour(colour,session):
     session["board"] = Board().fen()
     board = Board(session["board"])
     if colour not in ("black","white"):
-        return {"success": False,"message":"Not a valid colour."},400
+        return {"success": False,
+                "message":"Not a valid colour.",
+                "data":{}
+                },400
     if session["mode"] == "ai_vs_ai" or (session["mode"] == "ai_vs_human" and colour == "black"):
         legal_moves = []
     else:
         legal_moves = sorted([move.uci() for move in board.legal_moves])
-    return {"success": True,"data":{"board":get_board(board),"legal_moves":legal_moves}},200
+    return {"success": True,
+            "message":None,
+            "data":{"board":get_board(board),"legal_moves":legal_moves}
+            },200
 
 def make_move(move,session):
     if "board" not in session:
@@ -49,21 +61,30 @@ def make_move(move,session):
         push_move(board,move)
         session["board"] = board.fen()
     except ValueError:
-        return {"success": False,"message":"Not a valid move."},200
+        return {"success": False,
+                "message":"Not a valid move.",
+                "data":{}
+                },400
     except:
-        return {"success": False,"message":"Internal server error."},500
+        return {},500
     if board.outcome() is not None:
         end_reason = str(board.outcome().termination).replace("Termination.","")
         end_reason = end_reason[0].upper()+end_reason[1:].lower()
         colours = {True:"White",False:"Black",None:"Draw"}
         winner = colours[board.outcome().winner]
-        return {"success": True,"data":{"move":move,"board":get_board(board),"legal_moves":[],"game_is_over":True,"end_reason":end_reason,"winner":winner}},200
+        return {"success": True,
+                "message":None,
+                "data":{"move":move,"board":get_board(board),"legal_moves":[],"game_is_over":True,"end_reason":end_reason,"winner":winner}
+                },200
 
     if session["mode"] == "human_vs_human":
         legal_moves = sorted([mover.uci() for mover in board.legal_moves])
     else:
         legal_moves = []
-    return {"success": True,"data":{"move":move,"board":get_board(board),"legal_moves":legal_moves}},200
+    return {"success": True,
+            "message":None,
+            "data":{"move":move,"board":get_board(board),"legal_moves":legal_moves}
+            },200
 
 def let_ai_make_move(thinking_time,session):
     if "board" not in session:
@@ -76,16 +97,22 @@ def let_ai_make_move(thinking_time,session):
         push_move(board,ai_move)
         session["board"] = board.fen()
     except:
-        return {"success": False,"message":"Internal server error."},500
+        return {},500
     if board.outcome() is not None:
         end_reason = str(board.outcome().termination).replace("Termination.","")
         end_reason = end_reason[0].upper()+end_reason[1:].lower()
         colours = {True:"White",False:"Black",None:"Draw"}
         winner = colours[board.outcome().winner]
-        return {"success": True,"data":{"move":ai_move,"board":get_board(board),"legal_moves":[],"game_is_over":True,"end_reason":end_reason,"winner":winner}},200
+        return {"success": True,
+                "message":None,
+                "data":{"move":ai_move,"board":get_board(board),"legal_moves":[],"game_is_over":True,"end_reason":end_reason,"winner":winner}
+                },200
 
     if session["mode"] != "ai_vs_ai":
         legal_moves = sorted([move.uci() for move in board.legal_moves])
     else:
         legal_moves = []
-    return {"success": True,"data":{"move":ai_move,"board":get_board(board),"legal_moves":legal_moves}},200
+    return {"success": True,
+            "message":None,
+            "data":{"move":ai_move,"board":get_board(board),"legal_moves":legal_moves}
+            },200
