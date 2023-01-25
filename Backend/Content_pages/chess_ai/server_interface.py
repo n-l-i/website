@@ -68,14 +68,6 @@ def new_chessgame(token,mode=None,colour=None):
             },200
 
 def make_move(move,token):
-    successful,token_is_valid = is_valid_token(token)
-    if not successful:
-        return {}, 500
-    if not token_is_valid:
-        return {"success": False,
-                "message": "Valid access token needs to be provided.",
-                "data": {}
-                },400
     _,game = select_chessgame(token)
     if game is None:
         return {"success": False,

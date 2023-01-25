@@ -17,12 +17,7 @@ def get_tab(tab,token):
                 "message":"Tab name needs to be provided.",
                 "data": {}
                 },400
-    if token:
-        result = is_signed_in(token)[0]
-        signed_in = result["success"] and result["data"]
-    else:
-        signed_in = False
-    if not signed_in:
+    if token is None:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Login_pages/{tab}/{tab}.html"
     else:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Content_pages/{tab}/{tab}.html"
@@ -60,39 +55,12 @@ def sign_in(username,password):
             },200
 
 def sign_out(token):
-    if len(token) == 0:
-        return {"success": False,
-                "message":"Access token needs to be provided.",
-                "data": {}
-                },400
-    successful,token_is_valid = is_valid_token(token)
-    if not successful:
-        return {}, 500
-    if not token_is_valid:
-        return {"success": False,
-                "message": "Access token is not valid.",
-                "data": {}
-                },200
     success = delete_token(token)
     if not success:
         return {}, 500
     return {"success": True,
             "message": "Successfully signed out.",
             "data": {}
-            },200
-
-def is_signed_in(token):
-    if not token:
-        return {"success": True,
-                "message": "Successfully retrieved data.",
-                "data": False
-                },200
-    success,is_valid = is_valid_token(token)
-    if not success:
-        return {}, 500
-    return {"success": True,
-            "message": "Successfully retrieved data.",
-            "data": is_valid
             },200
 
 def sign_up(username,password,favourite_fruit):

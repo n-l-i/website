@@ -10,7 +10,6 @@ from .Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
     sign_out as _sign_out,
-    is_signed_in as _is_signed_in,
     sign_up as _sign_up,
     get_favourite_fruits as _get_favourite_fruits
 )
@@ -18,6 +17,9 @@ from .Content_pages.chess_ai.server_interface import (
     new_chessgame as _new_chessgame,
     make_move as _make_move,
     let_ai_make_move as _let_ai_make_move
+)
+from .database_requests import (
+    is_valid_token
 )
 
 app = Flask(__name__)
@@ -51,6 +53,21 @@ def get_origin_ip(http_request):
                 return address
     # The request originates from a trusted proxy
     return request_route[0]
+
+def _is_valid(token):
+    assert isinstance(token,str) or token is None
+    success,token_is_valid = is_valid_token(token)
+    if not success:
+        return {}, 500
+    if not token_is_valid:
+        return {"success": False,
+                "message": "Valid access token needs to be provided.",
+                "data": {}
+                },400
+    return {"success": True,
+            "message": "Successfully retrieved data.",
+            "data": True
+            },200
 
 @app.before_request
 def before_request():
@@ -115,10 +132,10 @@ def after_request(response):
         assert "data" in response.get_json(), (request.get_json(),response.get_json())
     return response
 
-@app.errorhandler(Exception)
-def error_generic(e):
-    request.error = e
-    return make_response({}, 500)
+#@app.errorhandler(Exception)
+#def error_generic(e):
+    #request.error = e
+    #return make_response({}, 500)
 
 @app.errorhandler(404)
 def error_404(e):
@@ -147,7 +164,8 @@ def get_tab():
     if tab not in ("about","signin","home","chess_ai","network_simulator","ssl_certs"):
         return make_response({}, 400)
     token = request.get_json().get("token")
-    assert isinstance(token,str) or token is None
+    if _is_valid(token)[1] != 200:
+        token = None
     return make_response(_get_tab(tab,token))
 
 @app.route("/sign_in", methods = ["POST"])
@@ -161,15 +179,18 @@ def sign_in():
 @app.route("/sign_out", methods = ["POST"])
 def sign_out():
     token = request.get_json().get("token")
-    assert isinstance(token,str) or token is None
-    response = make_response(_sign_out(token))
-    return response
+    if _is_valid(token)[1] != 200:
+        return _is_valid(token)
+    return make_response(_sign_out(token))
 
 @app.route("/is_signed_in", methods = ["POST"])
 def is_signed_in():
     token = request.get_json().get("token")
-    assert isinstance(token,str) or token is None
-    return make_response(_is_signed_in(token))
+    token_is_valid = _is_valid(token)[1] == 200
+    return make_response(({"success": True,
+                           "message": "Successfully retrieved data.",
+                           "data": token_is_valid
+                           },200))
 
 @app.route("/sign_up", methods = ["POST"])
 def sign_up():
@@ -194,7 +215,8 @@ def select_mode():
     mode = request.get_json().get("mode")
     assert isinstance(mode,str) or mode is None
     token = request.get_json().get("token")
-    assert isinstance(token,str) or token is None
+    if _is_valid(token)[1] != 200:
+        return _is_valid(token)
     return make_response(_new_chessgame(token,mode=mode))
 
 @app.route("/select_colour", methods = ["POST"])
@@ -202,7 +224,8 @@ def select_colour():
     colour = request.get_json().get("colour")
     assert isinstance(colour,str) or colour is None
     token = request.get_json().get("token")
-    assert isinstance(token,str) or token is None
+    if _is_valid(token)[1] != 200:
+        return _is_valid(token)
     return make_response(_new_chessgame(token,colour=colour))
 
 @app.route("/new_chessgame", methods = ["POST"])
@@ -212,18 +235,23 @@ def new_chessgame():
     colour = request.get_json().get("colour")
     assert isinstance(colour,str) or colour is None
     token = request.get_json().get("token")
-    assert isinstance(token,str) or token is None
+    if _is_valid(token)[1] != 200:
+        return _is_valid(token)
     return make_response(_new_chessgame(token,mode,colour))
 
 @app.route("/make_move", methods = ["POST"])
 def make_move():
     move = str(request.get_json().get("move")).lower()
     token = request.get_json().get("token")
+    if _is_valid(token)[1] != 200:
+        return _is_valid(token)
     return make_response(_make_move(move,token))
 
 @app.route("/let_ai_make_move", methods = ["POST"])
 def let_ai_make_move():
     token = request.get_json().get("token")
+    if _is_valid(token)[1] != 200:
+        return _is_valid(token)
     thinking_time = float(str(request.get_json().get("thinking_time")))
     assert 0 <= thinking_time <= 60
     return make_response(_let_ai_make_move(thinking_time,token))
