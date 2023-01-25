@@ -5,12 +5,13 @@ function load_chess_ai(){
     localStorage.setItem("legal_moves","");
     localStorage.setItem("selected_colour","");
     localStorage.setItem("mode","");
-    localStorage.setItem("new_turn_timestamp",Date.now());
+    localStorage.setItem("new_turn_timestamp","");
     localStorage.getItem("think_time","");
     setInterval(count_down_timer, 1000);
     select_thinktime();
     select_mode();
     select_colour();
+    restart_game();
     check_thinktime();
     check_mode();
     check_colour();
@@ -27,23 +28,27 @@ function count_down_timer(){
     }
 }
 
-function select_mode(){
+function restart_game(){
     localStorage.setItem("new_turn_timestamp",Date.now());
-    mode = document.getElementById("mode_input").value
+    document.getElementById("header").innerHTML = "On this page resides a chess AI I've written.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
+    colour = localStorage.getItem("selected_colour");
+    mode = localStorage.getItem("mode");
+    reset_selected_tiles();
+    document.getElementById("move_stack").innerHTML = "";
+    localStorage.setItem("turn",colour);
+    token = localStorage.getItem("token");
+    make_http_request('POST', HOST_URL+'/new_chessgame', {"mode":mode,"colour":colour,"token":token}, display_board);
+}
+
+function select_mode(){
+    mode = document.getElementById("mode_input").value;
     localStorage.setItem("mode",mode);
-    make_http_request('POST', HOST_URL+'/select_mode', {"mode":mode}, display_board)
     check_mode();
 }
 
 function select_colour(){
-    localStorage.setItem("new_turn_timestamp",Date.now());
-    document.getElementById("header").innerHTML = "On this page resides a chess AI I've written.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
-    colour = document.getElementById("colour_input").value
-    reset_selected_tiles();
-    document.getElementById("move_stack").innerHTML = "";
-    localStorage.setItem("turn",colour);
+    colour = document.getElementById("colour_input").value;
     localStorage.setItem("selected_colour",colour);
-    make_http_request('POST', HOST_URL+'/select_colour', {"colour":colour}, display_board)
     check_colour();
 }
 
@@ -89,7 +94,9 @@ function display_board(response){
     }
     if (response.data.legal_moves.length == 0){
         document.getElementById("chess_ai").innerHTML = "Waiting for AI to make a move...<br>"+document.getElementById("chess_ai").innerHTML;
-        make_http_request('POST', HOST_URL+'/let_ai_make_move', {"thinking_time":localStorage.getItem("think_time")}, display_board);
+        token = localStorage.getItem("token");
+        think_time = localStorage.getItem("think_time");
+        make_http_request('POST', HOST_URL+'/let_ai_make_move', {"thinking_time":think_time,"token":token}, display_board);
     }
 }
 
@@ -122,7 +129,8 @@ function select_tile(div_id){
     }
     reset_selected_tiles();
     if (is_selected_move){
-        make_http_request('POST', HOST_URL+'/make_move', {"move":move}, display_board);
+        token = localStorage.getItem("token");
+        make_http_request('POST', HOST_URL+'/make_move', {"move":move,"token":token}, display_board);
         return;
     }
     String(localStorage.getItem("legal_moves")).split(",").forEach(move => {
@@ -197,6 +205,14 @@ function check_colour() {
 
 function check_thinktime() {
     new_thinktime = document.getElementById("thinktime_input").value;
+    if (new_thinktime > 60) {
+        document.getElementById("thinktime_input").value = 60;
+        new_thinktime = 60;
+    }
+    if (new_thinktime < 0) {
+        document.getElementById("thinktime_input").value = 0;
+        new_thinktime = 0;
+    }
     old_thinktime = localStorage.getItem("think_time");
     document.getElementById("thinktime_button").disabled = (new_thinktime === old_thinktime);
 }

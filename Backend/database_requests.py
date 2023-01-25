@@ -35,6 +35,15 @@ def init_db():
                             "PRIMARY KEY (token),"+ \
                             "FOREIGN KEY (username) REFERENCES users (username));")
     db_connection.execute("COMMIT;")
+    db_connection.execute("BEGIN;")
+    db_connection.execute("CREATE TABLE IF NOT EXISTS chess_games ("+ \
+                            "token TEXT NOT NULL,"+ \
+                            "board TEXT NOT NULL,"+ \
+                            "mode TEXT NOT NULL,"+ \
+                            "colour TEXT NOT NULL,"+ \
+                            "PRIMARY KEY (token),"+ \
+                            "FOREIGN KEY (token) REFERENCES logins (token));")
+    db_connection.execute("COMMIT;")
     _close_connection(db_connection)
 
 def create_user(username, password, favourite_fruit):
@@ -68,6 +77,9 @@ def delete_token(token):
     try:
         db_connection = _open_connection()
         db_connection.execute("BEGIN;")
+        db_connection.execute("DELETE FROM chess_games WHERE token = ?;",[token])
+        db_connection.execute("COMMIT;")
+        db_connection.execute("BEGIN;")
         db_connection.execute("DELETE FROM logins WHERE token = ?;",[token])
         db_connection.execute("COMMIT;")
         _close_connection(db_connection)
@@ -88,7 +100,7 @@ def update_token(token):
         return False
 
 def is_valid_token(token):
-    if token is None:
+    if not token:
         return (True,False)
     try:
         current_time = int(time())
@@ -146,3 +158,52 @@ def select_favourite_fruits():
         return (True,fruits)
     except:
         return (False,None)
+
+def create_chessgame(token,board_fen,mode,colour):
+    chessgame = (token,board_fen,mode,colour)
+    try:
+        db_connection = _open_connection()
+        db_connection.execute("BEGIN;")
+        db_connection.execute("INSERT OR REPLACE INTO chess_games VALUES (?,?,?,?);",chessgame)
+        db_connection.execute("COMMIT;")
+        _close_connection(db_connection)
+        return (True,None)
+    except:
+        return (False,None)
+
+def update_chessgame(token,board_fen):
+    try:
+        db_connection = _open_connection()
+        db_connection.execute("BEGIN;")
+        db_connection.execute("UPDATE chess_games SET board = ? WHERE token = ?;",[board_fen,token])
+        db_connection.execute("COMMIT;")
+        _close_connection(db_connection)
+        return True
+    except:
+        return False
+
+def select_chessgame(token):
+    try:
+        db_connection = _open_connection()
+        db_connection.execute("SELECT * FROM chess_games WHERE token = ?;",[token])
+        chessgame = db_connection.fetchone()
+        _close_connection(db_connection)
+        if chessgame is None:
+            return (True,None)
+        chessgame = {"board":chessgame[1],
+                     "mode":chessgame[2],
+                     "colour":chessgame[3]}
+        return (True,chessgame)
+    except:
+        return (False,None)
+
+def delete_chessgame(token):
+    try:
+        db_connection = _open_connection()
+        db_connection.execute("BEGIN;")
+        db_connection.execute("DELETE FROM chess_games WHERE token = ?;",[token])
+        db_connection.execute("COMMIT;")
+        _close_connection(db_connection)
+        return True
+    except:
+        return False
