@@ -40,7 +40,13 @@ fi
 
 (
     cd $website_directory && \
-    sed -i "s;\[URL\];$website_url;g" Frontend/Landing_page/index.html
+    sed "s;\[URL\];$website_url;g" Frontend/Landing_page/index.html > Frontend/Landing_page/index_live.html
+) && (
+    cd $website_directory && \
+    touch Log/all_requests.txt && \
+    touch Log/failed_requests.txt && \
+    touch Log/non_proxied_requests.txt && \
+    touch Log/successful_requests.txt
 ) && (
     cd $website_directory && \
     python3 -m venv venv && \
@@ -67,9 +73,9 @@ fi
         cd $website_directory && \
         sudo apt install nginx && \
         sudo rm -f /etc/nginx/sites-enabled/default && \
-        sed -i "s;\[WEBSITE_DIR\];$website_directory;g" Backend/nginx_config && \
+        sed "s;\[WEBSITE_DIR\];$website_directory;g" Backend/nginx_config > Backend/nginx_config_live && \
         sudo rm -f /etc/nginx/sites-available/webserver && \
-        sudo cp Backend/nginx_config /etc/nginx/sites-available/webserver && \
+        sudo cp Backend/nginx_config_live /etc/nginx/sites-available/webserver && \
         sudo rm -f /etc/nginx/sites-enabled/webserver && \
         sudo ln -s /etc/nginx/sites-available/webserver /etc/nginx/sites-enabled/webserver && \
         sudo systemctl restart nginx

@@ -3,3 +3,7 @@
 **.db
 **/Content_pages/**/src
 SSL_cert/*
+Backend/cloudflare_ips.json
+Log/*
+Frontend/Landing_page/index_live.html
+Backend/nginx_config_live

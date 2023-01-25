@@ -1,1 +1,0 @@
-request_arrival_time;response_departure_time;user_ip;request_method;request_url;status_code;request_data;response_data
