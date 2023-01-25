@@ -16,21 +16,15 @@ def get_board(board):
     return str_board
 
 def select_mode(new_mode,session):
-    if "board" not in session:
-        session["board"] = Board().fen()
-    if "mode" not in session:
-        session["mode"] = "ai_vs_human"
-    board = Board(session["board"])
+    if "colour" not in session:
+        session["colour"] = "white"
     if new_mode not in ("ai_vs_human","human_vs_human","ai_vs_ai"):
         return {"success": False,
                 "message":"Not a valid game mode.",
                 "data":{}
                 },400
     session["mode"] = new_mode
-    return {"success": True,
-            "message":None,
-            "data":{}
-            },200
+    return _get_new_game(session)
 
 def select_colour(colour,session):
     if "mode" not in session:
@@ -42,7 +36,13 @@ def select_colour(colour,session):
                 "message":"Not a valid colour.",
                 "data":{}
                 },400
-    if session["mode"] == "ai_vs_ai" or (session["mode"] == "ai_vs_human" and colour == "black"):
+    session["colour"] = colour
+    return _get_new_game(session)
+
+def _get_new_game(session):
+    board = Board()
+    session["board"] = board.fen()
+    if session["mode"] == "ai_vs_ai" or (session["mode"] == "ai_vs_human" and session["colour"] == "black"):
         legal_moves = []
     else:
         legal_moves = sorted([move.uci() for move in board.legal_moves])
