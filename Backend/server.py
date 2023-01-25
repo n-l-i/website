@@ -23,6 +23,11 @@ from .Content_pages.chess_ai.server_interface import (
 
 app = Flask(__name__)
 app.secret_key = "".join([choice(ascii_letters) for _ in range(20)])
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax'
+)
 
 def get_app():
     return app
@@ -44,11 +49,14 @@ def cloudflare_ips():
     return ips
 
 def get_origin_ip(http_request):
-    trusted_proxies = {'127.0.0.1'}
-    for addr in reversed(http_request.access_route):
-        if addr not in trusted_proxies:
-            return addr
-    return http_request.remote_addr
+    # Select the most recently appended IP that is not a trusted proxy.
+    request_route = http_request.access_route+[http_request.remote_addr]
+    for address in reversed(request_route):
+        for network in cloudflare_ips()+["127.0.0.1/32"]:
+            if ip_address(address) not in ip_network(network):
+                return address
+    # The request originates from a trusted proxy
+    return request_route[0]
 
 @app.before_request
 def before_request():
