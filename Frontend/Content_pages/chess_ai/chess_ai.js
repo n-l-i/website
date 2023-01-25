@@ -1,12 +1,12 @@
 function load_chess_ai(){
     localStorage.setItem("selected_tiles","");
     localStorage.setItem("targeted_tiles","");
-    localStorage.setItem("turn","");
-    localStorage.setItem("legal_moves","");
-    localStorage.setItem("selected_colour","");
-    localStorage.setItem("mode","");
-    localStorage.setItem("new_turn_timestamp","");
-    localStorage.getItem("think_time","");
+    localStorage.setItem("turn",null);
+    localStorage.setItem("legal_moves",null);
+    localStorage.setItem("selected_colour",null);
+    localStorage.setItem("mode",null);
+    localStorage.setItem("new_turn_timestamp",null);
+    localStorage.getItem("think_time",null);
     setInterval(count_down_timer, 1000);
     select_thinktime();
     select_mode();
@@ -22,10 +22,14 @@ function sleep(ms) {
 }
 
 function count_down_timer(){
-    if (document.getElementById("chess_timer") !== null) {
-        let timer_id = String(localStorage.getItem("turn"))+"_timer";
-        document.getElementById(timer_id).innerHTML = String(parseInt(document.getElementById(timer_id).innerHTML)-1);
+    if (document.getElementById("chess_timer") == null) {
+        return;
     }
+    if (localStorage.getItem("turn") == null) {
+        return;
+    }
+    let timer_id = localStorage.getItem("turn")+"_timer";
+    document.getElementById(timer_id).innerHTML = String(parseInt(document.getElementById(timer_id).innerHTML)-1);
 }
 
 function restart_game(){
@@ -33,10 +37,10 @@ function restart_game(){
     document.getElementById("header").innerHTML = "On this page resides a chess AI I've written.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
     colour = localStorage.getItem("selected_colour");
     mode = localStorage.getItem("mode");
-    reset_selected_tiles();
     document.getElementById("move_stack").innerHTML = "";
     localStorage.setItem("turn",colour);
     token = localStorage.getItem("token");
+    reset_selected_tiles();
     make_http_request('POST', HOST_URL+'/new_chessgame', {"mode":mode,"colour":colour,"token":token}, display_board);
 }
 
@@ -89,7 +93,7 @@ function display_board(response){
     }
     if (typeof response.data.game_is_over !== "undefined"){
         document.getElementById("chess_ai").innerHTML = "<div id=\"gameover_msg\">Game has ended, "+response.data.end_reason+".<br>Winner: "+response.data.winner+"</div><br>"+document.getElementById("chess_ai").innerHTML;
-        localStorage.setItem("turn","None");
+        localStorage.setItem("turn",null);
         return;
     }
     if (response.data.legal_moves.length == 0){
