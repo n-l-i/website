@@ -2,10 +2,18 @@ function load_chess_ai(){
     localStorage.setItem("selected_tiles","");
     localStorage.setItem("targeted_tiles","");
     localStorage.setItem("turn","");
-    localStorage.setItem("selected_colour","");
     localStorage.setItem("legal_moves","");
-    setInterval(count_down_timer, 1000); 
+    localStorage.setItem("selected_colour","");
+    localStorage.setItem("mode","");
+    localStorage.setItem("new_turn_timestamp",Date.now());
+    localStorage.getItem("think_time","");
+    setInterval(count_down_timer, 1000);
+    select_thinktime();
     select_mode();
+    select_colour();
+    check_thinktime();
+    check_mode();
+    check_colour();
 }
 
 function sleep(ms) {
@@ -20,18 +28,15 @@ function count_down_timer(){
 }
 
 function select_mode(){
+    localStorage.setItem("new_turn_timestamp",Date.now());
     mode = document.getElementById("mode_input").value
-    make_http_request('POST', HOST_URL+'/select_mode', {"mode":mode}, change_mode)
-}
-function change_mode(response){
-    if (response.status_code !== 200 || response.success !== true) {
-        show_status_message(response.message);
-        return;
-    }
-    select_colour();
+    localStorage.setItem("mode",mode);
+    make_http_request('POST', HOST_URL+'/select_mode', {"mode":mode}, display_board)
+    check_mode();
 }
 
 function select_colour(){
+    localStorage.setItem("new_turn_timestamp",Date.now());
     document.getElementById("header").innerHTML = "On this page resides a chess AI I've written.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
     colour = document.getElementById("colour_input").value
     reset_selected_tiles();
@@ -39,9 +44,21 @@ function select_colour(){
     localStorage.setItem("turn",colour);
     localStorage.setItem("selected_colour",colour);
     make_http_request('POST', HOST_URL+'/select_colour', {"colour":colour}, display_board)
+    check_colour();
+}
+
+function select_thinktime(){
+    thinktime = document.getElementById("thinktime_input").value
+    localStorage.setItem("think_time",parseFloat(thinktime));
+    check_thinktime();
 }
 
 function display_board(response){
+    // If the request was sent before the turn was started, ignore the response.
+    // This can happen with slow AI responses.
+    if (response.timestamp < localStorage.getItem("new_turn_timestamp")){
+        return;
+    }
     if (response.status_code !== 200 || response.success !== true) {
         show_status_message(response.message);
         return;
@@ -72,7 +89,7 @@ function display_board(response){
     }
     if (response.data.legal_moves.length == 0){
         document.getElementById("chess_ai").innerHTML = "Waiting for AI to make a move...<br>"+document.getElementById("chess_ai").innerHTML;
-        make_http_request('POST', HOST_URL+'/let_ai_make_move', {"thinking_time":10}, display_board);
+        make_http_request('POST', HOST_URL+'/let_ai_make_move', {"thinking_time":localStorage.getItem("think_time")}, display_board);
     }
 }
 
@@ -164,4 +181,22 @@ function render_board(text_board,last_move){
         document.getElementById(last_move.slice(0,2)).classList.add("selected_tile");
         document.getElementById(last_move.slice(2,4)).classList.add("selected_tile");
     }
+}
+
+function check_mode() {
+    new_mode = document.getElementById("mode_input").value;
+    old_mode = localStorage.getItem("mode");
+    document.getElementById("mode_button").disabled = (new_mode === old_mode);
+}
+
+function check_colour() {
+    new_colour = document.getElementById("colour_input").value;
+    old_colour = localStorage.getItem("selected_colour");
+    document.getElementById("colour_button").disabled = (new_colour === old_colour);
+}
+
+function check_thinktime() {
+    new_thinktime = document.getElementById("thinktime_input").value;
+    old_thinktime = localStorage.getItem("think_time");
+    document.getElementById("thinktime_button").disabled = (new_thinktime === old_thinktime);
 }

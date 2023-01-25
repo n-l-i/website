@@ -212,5 +212,6 @@ def make_move():
 
 @app.route("/let_ai_make_move", methods = ["POST"])
 def let_ai_make_move():
-    thinking_time = int(str(request.get_json().get("thinking_time")))
+    thinking_time = float(str(request.get_json().get("thinking_time")))
+    assert 0 <= thinking_time <= 60
     return make_response(_let_ai_make_move(thinking_time,session))

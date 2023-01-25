@@ -33,6 +33,10 @@
     font-family: monospace, monospace;
 }
 
+#thinktime_input {
+    width: 100px;
+}
+
 #chess_ai {
     flex-grow: 1;
     border-style: solid;
