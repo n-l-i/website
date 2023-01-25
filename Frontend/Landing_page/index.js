@@ -42,16 +42,17 @@ function make_http_request(method,url,data,onload){
         let message = ("message" in response) ?
             response.message : "The http request failed with status code: "+xmlhttp.status+".";
         let data = response.data;
-        onload({"status_code":xmlhttp.status,"success":success,"message":message,"data":data});
+        onload({"status_code":xmlhttp.status,"success":success,"message":message,"data":data,"timestamp":xmlhttp.timestamp});
     };
     xmlhttp.timeout = 300000;
     xmlhttp.ontimeout = function (e) {
-        onload({"status_code":xmlhttp.status,"success":false,"message":"Request timed out.","data":null});
+        onload({"status_code":xmlhttp.status,"success":false,"message":"Request timed out.","data":null,"timestamp":xmlhttp.timestamp});
     };
 
     xmlhttp.setRequestHeader('Content-type', 'application/json')
     request_body = JSON.stringify(data);
     xmlhttp.send(request_body);
+    xmlhttp.timestamp = Date.now();
 }
 
 function show_status_message(message,is_warning = true) {
