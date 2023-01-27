@@ -1,5 +1,7 @@
 from time import sleep
 from string import punctuation
+from random import randint
+import pathlib
 from ..database_requests import (
     create_login,
     is_valid_token,
@@ -8,8 +10,9 @@ from ..database_requests import (
     select_password,
     select_favourite_fruits
 )
-from random import randint
-import pathlib
+from .cryptography import (
+    balloon_hash
+)
 
 def get_tab(tab,token):
     if not tab:
@@ -37,12 +40,12 @@ def sign_in(username,password):
                 "message":"Both email and password need to be provided.",
                 "data": {}
                 },400
-    successful,old_password = select_password(username)
+    successful,old_password,salt = select_password(username)
     if not successful:
         return {}, 500
-    if old_password is None or password != old_password:
+    if old_password is None or balloon_hash(password,salt) != old_password:
         return {"success": False,
-                "message": "Wrong username or password.",
+                "message": "Wrong email, password or secret.",
                 "data": {}
                 },200
     token = create_token()
@@ -91,7 +94,9 @@ def sign_up(username,password,favourite_fruit):
                 },400
     if len(favourite_fruit) == 0:
         favourite_fruit = None
-    successful,_ = create_user(username, password, favourite_fruit)
+    salt = create_token()
+    password_hash = balloon_hash(password,salt)
+    successful,_ = create_user(username, password_hash, salt, favourite_fruit)
     if not successful:
         return {}, 500
     return {"success": True,

@@ -4,6 +4,9 @@ function load_login_pages(){
     var newScript = document.createElement("script");
     newScript.src = HOST_URL+"/get_file/Frontend/Login_pages/signin/signin.js";
     document.head.appendChild(newScript);
+    var newScript = document.createElement("script");
+    newScript.src = HOST_URL+"/get_file/Frontend/Login_pages/signin/cryptography.js";
+    document.head.appendChild(newScript);
     newScript = document.createElement("script");
     newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/about/about.js";
     document.head.appendChild(newScript);

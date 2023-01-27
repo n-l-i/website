@@ -24,6 +24,7 @@ def init_db():
     db_connection.execute("CREATE TABLE IF NOT EXISTS users ("+ \
                             "username TEXT NOT NULL,"+ \
                             "password TEXT NOT NULL,"+ \
+                            "salt TEXT NOT NULL,"+ \
                             "favourite_fruit TEXT,"+ \
                             "PRIMARY KEY (username));")
     db_connection.execute("COMMIT;")
@@ -46,12 +47,12 @@ def init_db():
     db_connection.execute("COMMIT;")
     _close_connection(db_connection)
 
-def create_user(username, password, favourite_fruit):
-    user = (username, password, favourite_fruit)
+def create_user(username, password, salt, favourite_fruit):
+    user = (username, password, salt, favourite_fruit)
     try:
         db_connection = _open_connection()
         db_connection.execute("BEGIN;")
-        db_connection.execute("INSERT INTO users VALUES (?,?,?);",user)
+        db_connection.execute("INSERT INTO users VALUES (?,?,?,?);",user)
         db_connection.execute("COMMIT;")
         _close_connection(db_connection)
         return (True,None)
@@ -124,14 +125,14 @@ def is_valid_token(token):
 def select_password(username):
     try:
         db_connection = _open_connection()
-        db_connection.execute("SELECT password FROM users WHERE username = ?;",[username])
+        db_connection.execute("SELECT * FROM users WHERE username = ?;",[username])
         password = db_connection.fetchone()
         _close_connection(db_connection)
         if password is None:
-            return (True,None)
-        return (True,password[0])
+            return (True,None,None)
+        return (True,password[1],password[2])
     except:
-        return (False,None)
+        return (False,None,None)
 
 def select_users():
     try:
