@@ -3,9 +3,10 @@ from pathlib import Path
 import json
 from datetime import datetime
 from string import ascii_letters
-from random import choice
+from random import choice, uniform
 from ipaddress import ip_address, ip_network
 from functools import lru_cache
+from time import time
 from .Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
@@ -21,6 +22,11 @@ from .Content_pages.chess_ai.server_interface import (
 from .database_requests import (
     is_valid_token
 )
+
+constant_time_pages = {"sign_in":0,
+                       "is_signed_in":0,
+                       "sign_out":0,
+                       "sign_up":0}
 
 app = Flask(__name__)
 app.secret_key = "".join([choice(ascii_letters) for _ in range(20)])
@@ -72,6 +78,7 @@ def _is_valid(token):
 @app.before_request
 def before_request():
     request.arrival_time = datetime.now().strftime("%y%m%d-%H:%M:%S.%f")[:18]
+    request.arrival_timestamp = time()
     if request.remote_addr != "127.0.0.1" and not is_proxied(request):
         return make_response({}, 404)
     try:
@@ -130,6 +137,13 @@ def after_request(response):
         assert "success" in response.get_json(), (request.get_json(),response.get_json())
         assert "message" in response.get_json(), (request.get_json(),response.get_json())
         assert "data" in response.get_json(), (request.get_json(),response.get_json())
+    # Make sure that security pages give constant time responses.
+    if request.path in constant_time_pages:
+        constant_time_pages[request.path] = max(constant_time_pages[request.path],
+                                               time()-request.arrival_timestamp)
+        response_time = constant_time_pages[request.path]*uniform(1,1.5)
+        while time() < request.arrival_timestamp+response_time:
+            pass
     return response
 
 #@app.errorhandler(Exception)
@@ -201,10 +215,6 @@ def sign_up():
     favourite_fruit = request.get_json().get("favourite_fruit")
     assert isinstance(favourite_fruit,str) or favourite_fruit is None
     return make_response(_sign_up(username,password,favourite_fruit))
-
-@app.route("/signups", methods = ["GET"])
-def signups():
-    return make_response(_signups())
 
 @app.route("/get_favourite_fruits", methods = ["GET"])
 def get_favourite_fruits():
