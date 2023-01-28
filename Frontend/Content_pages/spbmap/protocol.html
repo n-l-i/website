@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<h1 id="spbmap-a-simple-password-based-mutual-authentication-protocol">SPBMAP - a Simple Password-Based Mutual Authentication Protocol</h1>
+<ul>
+<li><a href="#overview">Overview</a><ul>
+<li><a href="#overview-comparisons">Comparisons to other protocols</a></li>
+<li><a href="#overview-analysis">Strengths and limitations</a></li>
+</ul>
+</li>
+<li><a href="#outline">Outline</a><ul>
+<li><a href="#outline-registration">Registration</a></li>
+<li><a href="#outline-authentication">Authentication</a></li>
+</ul>
+</li>
+<li><a href="#definitions">Definitions</a></li>
+<li><a href="#specification">Specification</a><ul>
+<li><a href="#specification-registration">Registration</a></li>
+<li><a href="#specification-authentication">Authentication</a></li>
+</ul>
+</li>
+<li><a href="#implementation">Implementation considerations</a></li>
+<li><a href="#testvectors">Test vectors</a><ul>
+<li><a href="#testvectors-1">Test vector 1</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="-a-name-overview-overview"><a name="overview"> Overview</h1>
+<p>This document describes a password-based mutual authentication protocol. It provides a way for both the client and the server to authenticate each other and the protocol is relatively simple to implement.</p>
+<h3 id="-a-name-overview-comparisons-comparisons-to-other-protocols"><a name="overview-comparisons"> Comparisons to other protocols</h3>
+<ul>
+<li><strong>SCRAM</strong>: <a href="https://www.rfc-editor.org/rfc/rfc5802">SCRAM</a> is a similar protocol but it is a bit more complex. It conforms to both the <a href="https://www.rfc-editor.org/rfc/rfc4422">SASL</a> and the <a href="https://www.rfc-editor.org/rfc/rfc2743">GSS-API</a> standards which adds extra complexity and limitations on implementations. SCRAM also authenticates the client first and then authenticates the server whereas SPBMAP authenticates the server first and then the client. The authentication step is also a bit longer for SCRAM than for SPBMAP with 4 messages as compared to 3.</li>
+</ul>
+<h3 id="-a-name-overview-analysis-strengths-and-limitations"><a name="overview-analysis"> Strengths and limitations</h3>
+<p>Strengths:</p>
+<ul>
+<li>The client never has to share their password with the server.</li>
+<li>The client authenticates the server before the server authenticates the client.</li>
+</ul>
+<p>Limitations:</p>
+<ul>
+<li>The client sends a hash of their password to the server during registration.</li>
+<li>The client sends a hash of their id to the server during registration and authentication.</li>
+</ul>
+<p>Possible attacks:</p>
+<ul>
+<li>With knowledge of the client id and the client-side hash of the client id, one can perform an attack, for example a brute-force or dictionary attack, to figure out the client salt. Knowing the client salt enables attacks on the hashed password if that is known. This weakness exists because only the salt is then unknown, and this poses a threat since the same salt is used for both the client id and password. A strong client-side hash function combined with a strong client salt makes this attack infeasible.</li>
+<li>With knowledge of the the client-side hash of the client id, one can get the server salt by impersonating the client to the server. This poses a threat since it enables an attacker to perform a precomputation attack. In the case of a database breach, the server-side hash of a client password could be revealed to the attacker. The attacker could then utilise the precomputed data to figure out the client-side hash of the password. A strong server-side hash function combined with a strong password makes this attack infeasible.</li>
+</ul>
+<h1 id="-a-name-outline-protocol-outline"><a name="outline"> Protocol outline</h1>
+<p>This section provides a rough outline of how this protocol functions. The sections
+<a href="#definitions">Definitions</a> and <a href="#specification">Specification</a> describes the protocol in further detail.</p>
+<h3 id="-a-name-outline-registration-registration"><a name="outline-registration"> Registration</h3>
+<p>The registration step consists of only one message: a request from the client.</p>
+<ul>
+<li>The client calculates hashes of their id and password using a salt and then sends their id, hashed id, and hashed password to the server.</li>
+<li>The server responds with an acknowledgement that it has received the registration request.</li>
+</ul>
+<p>Depiction of the information flow:</p>
+<pre><code>    Client                                    Server
+    -<span class="ruby">-----------------------------------------------
+</span>                registration request
+             -<span class="ruby">------------------------&gt;
+</span>   -<span class="ruby">------------------------------------------------</span>
+</code></pre><h3 id="-a-name-outline-authentication-authentication"><a name="outline-authentication"> Authentication</h3>
+<p>The authentication step consists of three messages: a request from the client, a response from the server that establishes mutual
+challenges and provides the server response to this challenge, and lastly a response to this challenge from the client.</p>
+<ul>
+<li>The client calculates the hash of its id using a salt and generates a challenge nonce. The client then sends their id, hashed id, and the nonce to the server.</li>
+<li>The server generates a challenge nonce and calculates its response to the mutual challenge. The server then sends the nonce, its challenge response,
+and the server side hashing parameters to the client.</li>
+<li>The client calculates the server side hash of the password and uses it to calculate its response to the mutual challenge. The client then sends its
+challenge response to the server.</li>
+</ul>
+<p>When the server challenge response has been received by the client, they make sure that it matches the expected value. If it does, the server is authenticated. The server authenticates the client in the same way when it receives the client challenge response.</p>
+<p>Depiction of the information flow:</p>
+<pre><code>    Client                                    Server
+    -<span class="ruby">-----------------------------------------------
+</span>                authentication request
+             -<span class="ruby">------------------------&gt;
+</span>                authentication response
+             &lt;-------------------------
+                challenge response
+             -<span class="ruby">------------------------&gt;
+</span>   -<span class="ruby">------------------------------------------------</span>
+</code></pre><h1 id="-a-name-definitions-definitions"><a name="definitions"> Definitions</h1>
+<p>There are a number of functions and values used in this protocol. These are defined in this section.</p>
+<h3 id="functions-">Functions:</h3>
+<ul>
+<li><code>H_client</code>: The hash function used by the client.</li>
+<li><code>H_server</code>: The hash function used by the server.</li>
+<li><code>HMAC</code>: The HMAC-SHA-256 algorithm.</li>
+</ul>
+<h3 id="generated-values-">Generated values:</h3>
+<ul>
+<li><code>id</code>: The client identifier.</li>
+<li><code>password</code>: The client password.</li>
+<li><code>client_salt</code>: The salt used by the client.</li>
+<li><code>server_id_salt</code>: The salt used by the server for the id field.</li>
+<li><code>server_password_salt</code>: The salt used by the server for the password field.</li>
+<li><code>client_nonce</code>: Nonce generated by the client.</li>
+<li><code>server_nonce</code>: Nonce generated by the server.</li>
+</ul>
+<h3 id="derived-values-">Derived values:</h3>
+<ul>
+<li><code>hashed_id := H_client(id,HMAC(client_salt,&quot;id&quot;))</code></li>
+<li><code>hashed_password := H_client(password,HMAC(client_salt,&quot;password&quot;))</code></li>
+<li><code>double_hashed_id := H_server(hashed_id,server_id_salt)</code></li>
+<li><code>double_hashed_password := H_server(hashed_password,server_password_salt)</code></li>
+<li><code>client_signature := HMAC(HMAC(double_hashed_password,&quot;client&quot;+client_nonce),&quot;server&quot;+server_nonce)</code></li>
+<li><code>server_signature := HMAC(HMAC(double_hashed_password,&quot;server&quot;+server_nonce),&quot;client&quot;+client_nonce)</code></li>
+</ul>
+<h3 id="data-formats-">Data formats:</h3>
+<ul>
+<li>All byte string values are encoded as hexadecimal strings. Text string values are first encoded in UTF-8.</li>
+<li>If a string is shorter than 64 bytes, the string is prefixed with zeroes to make it 64 bytes long.</li>
+<li>If a string is longer than 64 bytes, the SHA-256 digest of the UTF-8 encoded string is used instead.</li>
+<li>Message parameters are sent as JSON using the field names as defined in this document.</li>
+<li><strong>Example 1</strong>: <code>&quot;abc&quot; =&gt; &quot;0x0000000000000000000000000000000000000000000000000000000000616263&quot;</code>.</li>
+<li><strong>Example 2</strong>: <code>&quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot; =&gt; &quot;0x3964294b664613798d1a477eb8ad02118b48d0c5738c427613202f2ed123b5f1&quot;</code>.</li>
+</ul>
+<h1 id="-a-name-specification-specification"><a name="specification"> Specification</h1>
+<p>This section describes the communication between the server and the client in further detail.</p>
+<h3 id="-a-name-specification-registration-registration"><a name="specification-registration"> Registration</h3>
+<p>Before the registration step, the client has <code>id</code>, <code>password</code>, <code>client_salt</code>, <code>H_client</code> and <code>H_server</code>. The server has <code>H_server</code>.</p>
+<p>The registration proceeds as follows:</p>
+<ol>
+<li>The client calculates <code>hashed_id</code> and <code>hashed_password</code>.</li>
+<li>The client sends <code>id</code>, <code>hashed_id</code> and <code>hashed_password</code> to the server.</li>
+<li>The server asserts that <code>id</code> is not already registered in the database.</li>
+<li>The server generates <code>server_id_salt</code> and <code>server_password_salt</code>.</li>
+<li>The server calculates <code>double_hashed_id</code> and <code>double_hashed_password</code>.</li>
+<li>The server stores <code>id</code>, <code>double_hashed_id</code>, <code>double_hashed_password</code>, <code>server_id_salt</code>, and <code>server_password_salt</code>.</li>
+</ol>
+<p>Registration can fail at step 3 causing error A.</p>
+<h3 id="-a-name-specification-authentication-authentication"><a name="specification-authentication"> Authentication</h3>
+<p>Before the authentication step, the client has <code>id</code>, <code>password</code>, <code>client_salt</code>, <code>H_client</code> and <code>H_server</code>. The server has <code>id</code>, <code>server_id_salt</code>, <code>server_password_salt</code>, <code>H_server</code>, <code>double_hashed_id</code>, and <code>double_hashed_password</code>.</p>
+<p>The registration proceeds as follows:</p>
+<ol>
+<li>The client calculates <code>hashed_id</code>.</li>
+<li>The client generates <code>client_nonce</code>.</li>
+<li>The client sends <code>id</code>, <code>hashed_id</code> and <code>client_nonce</code> to the server.</li>
+<li>The server asserts that <code>id</code> is registered in the database.</li>
+<li>The server calculates <code>double_hashed_id</code>.</li>
+<li>The server asserts that <code>double_hashed_id</code> matches the value registered at sign up.</li>
+<li>The server generates <code>server_nonce</code>.</li>
+<li>The server calculates <code>server_signature</code>.</li>
+<li>The server sends <code>server_password_salt</code>, <code>server_nonce</code>, and <code>server_signature</code> to the client.</li>
+<li>The client calculates <code>hashed_password</code>, <code>double_hashed_password</code>, <code>client_signature</code>, and  <code>server_signature</code>.</li>
+<li>The client asserts that <code>server_signature</code> matches the value sent by the server.</li>
+<li>The client sends <code>client_signature</code> to the server.</li>
+<li>The server calculates <code>client_signature</code>.</li>
+<li>The server asserts that <code>client_signature</code> matches the value sent by the client.</li>
+</ol>
+<p>Authentication can fail at step 4 or 6 causing error B, step 11 causing error C, or step 14 causing error D.</p>
+<h3 id="-a-name-specification-errors-errors"><a name="specification-errors"> Errors</h3>
+<p>This section describes how registration and authentication errors should be handled.</p>
+<ul>
+<li><strong>Error A</strong>: The server responds with the same message as for a successful request.</li>
+<li><strong>Error B</strong>: The server responds in a way indistinguishable from the response to a successful
+request, with incorrect <code>server_password_salt</code> and
+<code>server_signature</code> instead of the correct values. The incorrect server signature should be randomly
+generated. The incorrect salt must be unique but consistent for the
+inputs, i.e. every call with an <code>id</code> and <code>hashed_id</code> must yield
+a different <code>server_password_salt</code> from calls with any other <code>id</code> or
+<code>hashed_id</code> but the same <code>server_password_salt</code> as previous and subsequent
+calls with the same <code>id</code> and <code>hashed_id</code>.</li>
+<li><strong>Error C</strong>: The client aborts the connection.</li>
+<li><strong>Error D</strong>: The server aborts the connection.</li>
+</ul>
+<h1 id="-a-name-implementation-implementation-considerations"><a name="implementation"> Implementation considerations</h1>
+<p>Some points to consider when implementing this protocol are:</p>
+<ul>
+<li><code>client_salt</code> should not be known by the server or potential attackers.</li>
+<li><code>server_id_salt</code> and <code>server_password_salt</code> should be two different values.</li>
+<li><code>H_client</code> and <code>H_server</code> should be secure hash functions, for example Scrypt or Argon2.</li>
+</ul>
+<h1 id="-a-name-testvectors-test-vectors"><a name="testvectors"> Test vectors</h1>
+<p>This section lists some test vectors for this protocol.</p>
+<h3 id="-a-name-testvectors-1-test-vector-1"><a name="testvectors-1"> Test vector 1</h3>
+<p>Parameters:</p>
+<ul>
+<li><code>H_client(msg,salt) := HMAC(msg,HMAC(salt,&quot;client&quot;))</code></li>
+<li><code>H_server(msg,salt) := HMAC(msg,HMAC(salt,&quot;server&quot;))</code></li>
+<li><code>id := &quot;user&quot;</code></li>
+<li><code>password := &quot;password&quot;</code></li>
+<li><code>client_salt := &quot;client_salt&quot;</code></li>
+<li><code>server_id_salt := &quot;server_id_salt&quot;</code></li>
+<li><code>server_password_salt := &quot;server_password_salt&quot;</code></li>
+<li><code>client_nonce := &quot;client_nonce&quot;</code></li>
+<li><code>server_nonce := &quot;server_nonce&quot;</code></li>
+</ul>
+<p>Derived values:</p>
+<ul>
+<li><code>hashed_id = 0xf26c7f1eb954158a28066b62213cbcd862533c5b4899eedf6f4fdf0877e9a2ad</code></li>
+<li><code>hashed_password = 0x22b72f53d0639e8cff45df700cfc6e9cd237a54561e5fe10d370b96f65f5c042</code></li>
+<li><code>double_hashed_id = 0x9876f6d03274b8bd7bca9cc7ef9a4caffd512ee703771f2bdbc1d0230d0dc1b7</code></li>
+<li><code>double_hashed_password = 0x42531b177997a402e6b6d723833b564e36349e6a0af1b36877dd40d6d45ef3c6</code></li>
+<li><code>client_signature = 0x6adc3771b3623b49fdb9ddd82fbc0cdc4c39398941ac293f71f6cdffe64e648f</code></li>
+<li><code>server_signature = 0x0b08fb9c9892e9a570f716d5a175b57a5666af645174cf6efcd868616b9dac36</code></li>
+</ul>

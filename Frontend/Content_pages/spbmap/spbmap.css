@@ -1,0 +1,22 @@
+#spbmap_tab {
+    background-color: lightcoral;
+}
+
+#tab_area {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+#spbmap {
+    flex-grow: 1;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightskyblue;
+}
+
+#spbmap_protocol {
+    height: 100%;
+    width: 100%;
+}

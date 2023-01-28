@@ -169,13 +169,14 @@ def get_file(file_path):
     assert isinstance(file_path,str)
     file_path = Path(__file__).resolve().parent.parent.joinpath(file_path)
     if (not file_path.is_file()) or Path(__file__).resolve().parent.parent.joinpath("Frontend") not in file_path.parents:
+        print(file_path.is_file(),Path(__file__).resolve().parent.parent.joinpath("Frontend"))
         return make_response({}, 400)
     return make_response(send_file(file_path))
 
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
     tab = str(request.get_json().get("tab"))
-    if tab not in ("about","signin","home","chess_ai","network_simulator","ssl_certs"):
+    if tab not in ("about","signin","home","chess_ai","spbmap","network_simulator","ssl_certs"):
         return make_response({}, 400)
     token = request.get_json().get("token")
     if _is_valid(token)[1] != 200:

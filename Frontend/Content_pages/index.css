@@ -63,7 +63,7 @@ body {
     flex-flow: row;
 }
 
-#signout_button, #about_tab, #home_tab, #ssl_certs_tab, #chess_ai_tab, #network_simulator_tab {
+#signout_button, #about_tab, #home_tab, #ssl_certs_tab, #chess_ai_tab, #network_simulator_tab, #spbmap_tab {
     flex-grow: 1;
     border-style: solid;
     padding: 5px;
