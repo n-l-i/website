@@ -18,8 +18,9 @@ function open_tab(tab_name){
 }
 
 function load_tab(response){
-  document.getElementById("tab_content").innerHTML = response.data.html;
-  if (response.data.tab_name === "signin") {
-    list_favourite_fruits();
-  }
+    document.getElementById("tab_content").innerHTML = response.data.html;
+    if (response.data.tab_name === "signin") {
+        while (typeof list_favourite_fruits === "undefined") {}
+        list_favourite_fruits();
+    }
 }
