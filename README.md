@@ -12,11 +12,16 @@
 This is the source code for my personal website where I host a small selection of my projects.
 
 # <a name="usage"> Usage
-To host the website use the `init.sh` and `run.sh` scripts.
+Execute the `deploy.sh` script to host the website or use the separate `init.sh` and `run.sh` scripts.
+
+* `deploy.sh [-d or -p] -u [url]`: Runs `init.sh`, `run.sh` and automatically applies updates pushed to the GitHub repository.
 * `init.sh [-d or -p] -u [url]`: Initialise the source code in development mode (`-d`) or production mode (`-p`) and specify where to host it.
-Example: `./init.sh -d -u https://localhost:5001`
 * `run.sh [-d or -p]`: Host the website in development mode (`-d`) or production mode (`-p`).
-Example: `./run.sh -p`
+
+Examples:
+* `./deploy.sh -p -u https://example.domain`
+* `./init.sh -d -u https://localhost:5001`
+* `./run.sh -d`
 
 # <a name="contents"> Contents
 Here follows a short description of the projects present on the page.
