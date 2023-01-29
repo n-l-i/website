@@ -14,9 +14,9 @@ This is the source code for my personal website where I host a small selection o
 # <a name="usage"> Usage
 To host the website use the `init.sh` and `run.sh` scripts.
 * `init.sh [-d or -p] -u [url]`: Initialise the source code in development mode (`-d`) or production mode (`-p`) and specify where to host it.
-* **Example**: `./init.sh -d -u https://localhost:5001`
+Example: `./init.sh -d -u https://localhost:5001`
 * `run.sh [-d or -p]`: Host the website in development mode (`-d`) or production mode (`-p`).
-* **Example**: `./run.sh -p`
+Example: `./run.sh -p`
 
 # <a name="contents"> Contents
 Here follows a short description of the projects present on the page.
