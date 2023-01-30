@@ -1,8 +1,8 @@
-**/venv
+Deployment/venv
 **/__pycache__
 **.db
-**/Content_pages/**/src
-SSL_cert/*
+Backend/Content_pages/**/src
+Deployment/SSL_cert/*
 Backend/cloudflare_ips.json
 Log/*
 Frontend/Landing_page/index_live.html

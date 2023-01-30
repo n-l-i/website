@@ -2,8 +2,8 @@ server {
 	listen 5000 ssl;
 	listen [::]:5000 ssl;
 
-	ssl_certificate [WEBSITE_DIR]/SSL_cert/fullchain.pem;
-	ssl_certificate_key [WEBSITE_DIR]/SSL_cert/privkey.pem;
+	ssl_certificate [WEBSITE_DIR]/Deployment/SSL_cert/fullchain.pem;
+	ssl_certificate_key [WEBSITE_DIR]/Deployment/SSL_cert/privkey.pem;
 
 	gzip off;
 
@@ -14,7 +14,7 @@ server {
 	ssl_prefer_server_ciphers on;
 	ssl_session_cache shared:SSL:10m;
 
-	ssl_dhparam [WEBSITE_DIR]/SSL_cert/dhparam.pem;
+	ssl_dhparam [WEBSITE_DIR]/Deployment/SSL_cert/dhparam.pem;
 	ssl_ecdh_curve secp384r1;
 
 	server_name _;
