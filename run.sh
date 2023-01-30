@@ -1,8 +1,6 @@
 #!/bin/bash
 
-set -e
-
-/bin/bash Deployment/init_website.sh $1 $2 $3
+/bin/bash Deployment/init_website.sh $1 $2 $3 || exit 1
 /bin/bash Deployment/host_website.sh $1 &
 background_pid=$!
 trap "kill $background_pid; exit 1" SIGEXIT SIGHUP SIGINT SIGTERM
