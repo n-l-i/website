@@ -60,6 +60,7 @@ fi
     python3 -c "from Backend.database_requests import init_db;init_db()"
 
     if [[ ! -z "$dev_mode" ]]; then
+        python3 -m pip install selenium
         python3 -m pip install cryptography
     fi
     if [[ ! -z "$production_mode" ]]; then

@@ -8,3 +8,4 @@ Log/*
 Frontend/Landing_page/index_live.html
 Backend/nginx_config_live
 Frontend/Content_pages/spbmap/protocol.html
+Tests/*driver
