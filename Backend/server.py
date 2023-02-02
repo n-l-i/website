@@ -146,10 +146,10 @@ def after_request(response):
             pass
     return response
 
-#@app.errorhandler(Exception)
-#def error_generic(e):
-    #request.error = e
-    #return make_response({}, 500)
+@app.errorhandler(Exception)
+def error_generic(e):
+    request.error = e
+    return make_response({}, 500)
 
 @app.errorhandler(404)
 def error_404(e):
