@@ -7,19 +7,19 @@
 </head>
 <body>
     <div id="tabs">
-        <div id="signout_button" onclick="sign_out();">Sign out</div>
-        <div id="about_tab" onclick="open_tab('about');">About</div>
-        <div id="home_tab" onclick="open_tab('home');">Home</div>
-        <div id="chess_ai_tab" onclick="open_tab('chess_ai');">Chess AI</div>
-        <div id="spbmap_tab" onclick="open_tab('spbmap');">Authentication protocol</div>
-        <div id="ssl_certs_tab" onclick="open_tab('ssl_certs');">CTL monitor [WIP]</div>
-        <div id="network_simulator_tab" onclick="open_tab('network_simulator');">Network Simulator [WIP]</div>
+        <div id="signout_button" class="clickable" onclick="sign_out();">Sign out</div>
+        <div id="about_tab" class="clickable" onclick="open_tab('about');">About</div>
+        <div id="home_tab" class="clickable" onclick="open_tab('home');">Home</div>
+        <div id="chess_ai_tab" class="clickable" onclick="open_tab('chess_ai');">Chess AI</div>
+        <div id="spbmap_tab" class="clickable" onclick="open_tab('spbmap');">Authentication protocol</div>
+        <div id="ssl_certs_tab" class="clickable" onclick="open_tab('ssl_certs');">CTL monitor [WIP]</div>
+        <div id="network_simulator_tab" class="clickable" onclick="open_tab('network_simulator');">Network Simulator [WIP]</div>
     </div>
     <div id="tab_content"></div>
     <div id="status_msg">
         <div id="status_msg_box">
             <div id="status_msg_text"></div>
-            <div id="status_msg_ack" onclick="show_status_message('');">Ok</div>
+            <div id="status_msg_ack" class="clickable" onclick="show_status_message('');">Ok</div>
         </div>
     </div>
 </body>

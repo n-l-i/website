@@ -72,12 +72,13 @@ function display_board(response){
         show_status_message(response.message);
         return;
     }
+    let ai_turn = response.data.legal_moves.length == 0;
     if (String(localStorage.getItem("turn")) != "white") {
         localStorage.setItem("turn","white");
     } else {
         localStorage.setItem("turn","black");
     }
-    render_board(response.data.board,response.data.move);
+    render_board(response.data.board,response.data.move,ai_turn);
     localStorage.setItem("legal_moves",response.data.legal_moves);
     if (typeof response.data.move != "undefined"){
         let move = response.data.move.slice(0,2)+"&#8594;"+response.data.move.slice(2);
@@ -96,7 +97,7 @@ function display_board(response){
         localStorage.setItem("turn",null);
         return;
     }
-    if (response.data.legal_moves.length == 0){
+    if (ai_turn){
         document.getElementById("chess_ai").innerHTML = "Waiting for AI to make a move...<br>"+document.getElementById("chess_ai").innerHTML;
         token = localStorage.getItem("token");
         think_time = localStorage.getItem("think_time");
@@ -147,7 +148,7 @@ function select_tile(div_id){
     document.getElementById(div_id).classList.add("selected_tile");
 }
 
-function render_board(text_board,last_move){
+function render_board(text_board,last_move,ai_turn){
     let board = "";
     let tile_class = "light_tile";
     let piece_codes = {"p":"&#9823;","r":"&#9820;","n":"&#9822;","b":"&#9821;","k":"&#9818;","q":"&#9819;"}
@@ -164,8 +165,13 @@ function render_board(text_board,last_move){
     rows.forEach(row => {
         board += "<div class=\"chess_tile_row\">";
         cols.forEach(col => {
-            board += "<div class=\""+tile_class+"\" id=\""+col+row+"\" onClick=\"select_tile(this.id)\"><pre>"
-            let piece = text_board[col+row]
+            if (ai_turn) {
+                board += "<div class=\""+tile_class+"\" id=\""+col+row+"\">";
+            } else {
+                board += "<div class=\""+tile_class+" clickable\" id=\""+col+row+"\" onClick=\"select_tile(this.id)\">";
+            }
+            board += "<pre>";
+            let piece = text_board[col+row];
             if (typeof piece === "undefined"){
                 board += " ";
             } else if (piece.toLowerCase() === piece){
@@ -196,19 +202,31 @@ function render_board(text_board,last_move){
 }
 
 function check_mode() {
-    new_mode = document.getElementById("mode_input").value;
-    old_mode = localStorage.getItem("mode");
-    document.getElementById("mode_button").disabled = (new_mode === old_mode);
+    let new_mode = document.getElementById("mode_input").value;
+    let old_mode = localStorage.getItem("mode");
+    let mode_button = document.getElementById("mode_button");
+    mode_button.disabled = (new_mode === old_mode);
+    if (mode_button.disabled) {
+        mode_button.classList.remove("clickable");
+    } else {
+        mode_button.classList.add("clickable");
+    }
 }
 
 function check_colour() {
-    new_colour = document.getElementById("colour_input").value;
-    old_colour = localStorage.getItem("selected_colour");
-    document.getElementById("colour_button").disabled = (new_colour === old_colour);
+    let new_colour = document.getElementById("colour_input").value;
+    let old_colour = localStorage.getItem("selected_colour");
+    let colour_button = document.getElementById("colour_button");
+    colour_button.disabled = (new_colour === old_colour);
+    if (colour_button.disabled) {
+        colour_button.classList.remove("clickable");
+    } else {
+        colour_button.classList.add("clickable");
+    }
 }
 
 function check_thinktime() {
-    new_thinktime = document.getElementById("thinktime_input").value;
+    let new_thinktime = document.getElementById("thinktime_input").value;
     if (new_thinktime > 60) {
         document.getElementById("thinktime_input").value = 60;
         new_thinktime = 60;
@@ -217,6 +235,12 @@ function check_thinktime() {
         document.getElementById("thinktime_input").value = 0;
         new_thinktime = 0;
     }
-    old_thinktime = localStorage.getItem("think_time");
-    document.getElementById("thinktime_button").disabled = (new_thinktime === old_thinktime);
+    let old_thinktime = localStorage.getItem("think_time");
+    let thinktime_button = document.getElementById("thinktime_button");
+    thinktime_button.disabled = (new_thinktime === old_thinktime);
+    if (thinktime_button.disabled) {
+        thinktime_button.classList.remove("clickable");
+    } else {
+        thinktime_button.classList.add("clickable");
+    }
 }

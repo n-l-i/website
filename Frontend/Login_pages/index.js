@@ -10,10 +10,21 @@ function load_login_pages(){
     newScript = document.createElement("script");
     newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/about/about.js";
     document.head.appendChild(newScript);
-    open_tab("signin");
+    prev_tab_name = localStorage.getItem("tab");
+    open_tab(prev_tab_name);
 }
 
 function open_tab(tab_name){
+    prev_tab_name = localStorage.getItem("tab");
+    if (prev_tab_name && document.getElementById(prev_tab_name+"_tab")) {
+        document.getElementById(prev_tab_name+"_tab").classList.add("clickable");
+    }
+    if (!tab_name || !document.getElementById(tab_name+"_tab")) {
+        tab_name = "signin";
+    }
+    localStorage.setItem("tab",tab_name);
+    document.getElementById(tab_name+"_tab").classList.remove("clickable");
+    let token = localStorage.getItem("token");
     make_http_request("POST", HOST_URL+'/get_tab', {"tab":tab_name,"token":null}, load_tab);
 }
 

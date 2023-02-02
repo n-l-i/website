@@ -19,6 +19,15 @@ body {
     background-color: white;
 }
 
+.clickable {
+    transition: transform 0.01s ease;
+}
+
+.clickable:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
 #status_msg_box, #status_msg_ack, #about_tab, #signin_tab {
     flex-shrink: 0;
     border-style: solid;

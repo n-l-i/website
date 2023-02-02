@@ -7,14 +7,14 @@
 </head>
 <body>
     <div id="tabs">
-        <div id="about_tab" onclick="open_tab('about');">About</div>
-        <div id="signin_tab" onclick="open_tab('signin');">Sign in</div>
+        <div id="about_tab" class="clickable" onclick="open_tab('about');">About</div>
+        <div id="signin_tab" class="clickable" onclick="open_tab('signin');">Sign in</div>
     </div>
     <div id="tab_content"></div>
     <div id="status_msg">
         <div id="status_msg_box">
             <div id="status_msg_text"></div>
-            <div id="status_msg_ack" onclick="show_status_message('');">Ok</div>
+            <div id="status_msg_ack" class="clickable" onclick="show_status_message('');">Ok</div>
         </div>
     </div>
 </body>
