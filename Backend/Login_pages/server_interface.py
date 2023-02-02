@@ -20,7 +20,7 @@ def get_tab(tab,token):
                 "message":"Tab name needs to be provided.",
                 "data": {}
                 },400
-    if token is None and tab != "about":
+    if token is None:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Login_pages/{tab}/{tab}.html"
     else:
         tab_adress = f"{pathlib.Path(__file__).parent.resolve()}/../../Frontend/Content_pages/{tab}/{tab}.html"
