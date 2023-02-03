@@ -30,8 +30,8 @@ fi
     curl -X GET "https://api.cloudflare.com/client/v4/ips" > Backend/cloudflare_ips.json
     source Deployment/venv/bin/activate
     python3 -m Backend.fetch_repos
-    pandoc <(curl "https://raw.githubusercontent.com/n-l-i/Simple_Password_Based_Mutual_Authentication_Protocol/main/README.md") \
-            -f gfm -t html -o Frontend/Content_pages/spbmap/protocol.html
+    grip <(curl "https://raw.githubusercontent.com/n-l-i/Simple_Password_Based_Mutual_Authentication_Protocol/main/README.md") \
+            --export Frontend/Content_pages/spbmap/protocol.html
 
     if [[ ! -z "$production_mode" ]]; then
         gunicorn --workers 4 \

@@ -53,11 +53,9 @@ fi
     touch Log/successful_requests.txt
 
     if [[ ! -z "$(command -v apt)" ]]; then
-        [[ -z "$(command -v pandoc)" ]] && sudo apt install pandoc
         [[ -z "$(command -v curl)" ]] && sudo apt install curl
         [[ -z "$(command -v python3)" ]] && sudo apt install python3
     elif [[ ! -z "$(command -v yum)" ]]; then
-        [[ -z "$(command -v pandoc)" ]] && sudo yum install pandoc
         [[ -z "$(command -v curl)" ]] && sudo yum install curl
         [[ -z "$(command -v python3)" ]] && sudo yum install python3
     else
@@ -70,6 +68,7 @@ fi
     cd ..
     python3 -m pip install -r Backend/requirements.txt
     python3 -c "from Backend.database_requests import init_db;init_db()"
+    python3 -m pip install grip
 
     if [[ ! -z "$dev_mode" ]]; then
         python3 -m pip install selenium
