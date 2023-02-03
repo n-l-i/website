@@ -52,9 +52,17 @@ fi
     touch Log/non_proxied_requests.txt
     touch Log/successful_requests.txt
 
-    sudo apt install pandoc
-    sudo apt install curl
-    sudo apt install python3
+    if [[ ! -z "$(command -v apt)" ]]; then
+        [[ -z "$(command -v pandoc)" ]] && sudo apt install pandoc
+        [[ -z "$(command -v curl)" ]] && sudo apt install curl
+        [[ -z "$(command -v python3)" ]] && sudo apt install python3
+    elif [[ ! -z "$(command -v yum)" ]]; then
+        [[ -z "$(command -v pandoc)" ]] && sudo yum install pandoc
+        [[ -z "$(command -v curl)" ]] && sudo yum install curl
+        [[ -z "$(command -v python3)" ]] && sudo yum install python3
+    else
+        exit 1
+    fi
 
     cd Deployment
     python3 -m venv venv
@@ -69,7 +77,11 @@ fi
     fi
     if [[ ! -z "$production_mode" ]]; then
         python3 -m pip install gunicorn
-        sudo apt install nginx
+        if [[ -z "$(command -v nginx)" ]]; then
+            [[ ! -z "$(command -v apt)" ]] && sudo apt install nginx
+            [[ ! -z "$(command -v yum)" ]] && sudo yum install nginx
+            [[ -z "$(command -v apt)" && -z "$(command -v yum)" ]] && exit 1
+        fi
     fi
 
     openssl dhparam -dsaparam -out Deployment/SSL_cert/dhparam.pem 4096
