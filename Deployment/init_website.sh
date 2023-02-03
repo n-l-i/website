@@ -52,6 +52,10 @@ fi
     touch Log/non_proxied_requests.txt
     touch Log/successful_requests.txt
 
+    sudo apt install pandoc
+    sudo apt install curl
+    sudo apt install python3
+
     cd Deployment
     python3 -m venv venv
     source venv/bin/activate
@@ -65,13 +69,13 @@ fi
     fi
     if [[ ! -z "$production_mode" ]]; then
         python3 -m pip install gunicorn
+        sudo apt install nginx
     fi
 
     openssl dhparam -dsaparam -out Deployment/SSL_cert/dhparam.pem 4096
 
     if [[ ! -z "$production_mode" ]]; then
         cd $website_directory
-        sudo apt install nginx
         sudo rm -f /etc/nginx/sites-enabled/default
         sed "s;\[WEBSITE_DIR\];$website_directory;g" Deployment/nginx_config > Deployment/nginx_config_live
         sudo rm -f /etc/nginx/sites-available/webserver
