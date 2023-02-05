@@ -50,13 +50,18 @@ def cloudflare_ips():
     ips = ips["ipv4_cidrs"]+ips["ipv6_cidrs"]
     return ips
 
+def is_trusted_ip(address):
+    for network in cloudflare_ips()+["127.0.0.1/32"]:
+        if ip_address(address) in ip_network(network):
+            return True
+    return False
+
 def get_origin_ip(http_request):
     # Select the most recently appended IP that is not a trusted proxy.
     request_route = http_request.access_route+[http_request.remote_addr]
     for address in reversed(request_route):
-        for network in cloudflare_ips()+["127.0.0.1/32"]:
-            if ip_address(address) not in ip_network(network):
-                return address
+        if not is_trusted_ip(address):
+            return address
     # The request originates from a trusted proxy
     return request_route[0]
 
@@ -85,9 +90,9 @@ def before_request():
         data = json.dumps(request.get_json())
     except:
         data = "{}"
-    origin_ip = get_origin_ip(request)
+    request.origin_ip = get_origin_ip(request)
     with open(LOGS_DIR.joinpath("all_requests.txt"),"a") as log_file:
-        log_entry = f"{request.arrival_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
+        log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
         log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
         log_file.write(log_entry+"\n")
 
@@ -102,18 +107,9 @@ def after_request(response):
         response_data = json.dumps(response.get_json())
     except:
         response_data = "{}"
-    if "HTTP_CF_CONNECTING_IP" in request.environ:
-        origin_ip = request.environ['HTTP_CF_CONNECTING_IP']
-    elif "HTTP_X_REAL_IP" in request.environ:
-        origin_ip = request.environ['HTTP_X_REAL_IP']
-        response = make_response({}, 404)
-    else:
-        origin_ip = request.remote_addr
-        if origin_ip != "127.0.0.1":
-            response = make_response({}, 404)
     if response.status_code < 400:
         with open(LOGS_DIR.joinpath("successful_requests.txt"),"a") as log_file:
-            log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}"
+            log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{request.origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}"
             log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
             log_file.write(log_entry+"\n")
     else:
@@ -125,12 +121,12 @@ def after_request(response):
             error_type = ""
         if "HTTP_CF_CONNECTING_IP" in request.environ:
             with open(LOGS_DIR.joinpath("failed_requests.txt"),"a") as log_file:
-                log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
+                log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{request.origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
                 log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
                 log_file.write(log_entry+"\n")
         else:
             with open(LOGS_DIR.joinpath("non_proxied_requests.txt"),"a") as log_file:
-                log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
+                log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.departure_time}<[SEPARATOR]>{request.origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{response.status_code}<[SEPARATOR]>{request_data}<[SEPARATOR]>{response_data}<[SEPARATOR]>{error_type}<[SEPARATOR]>{error_description}"
                 log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
                 log_file.write(log_entry+"\n")
     if response.get_json():

@@ -74,7 +74,7 @@ fi
     if [[ ! -z "$production_mode" ]]; then
         cd $website_directory
         sed "s;\[WEBSITE_DIR\];$website_directory;g" Deployment/nginx_config > Deployment/nginx_config_live
-        sed -i "s;\DOMAIN_NAME\];$website_url;g" Deployment/nginx_config_live
+        sed -i "s;\[DOMAIN_NAME\];$website_url;g" Deployment/nginx_config_live
         if [[ ! -z "$(command -v apt)" ]]; then
             sudo mkdir -p /etc/nginx/sites-available
             sudo mkdir -p /etc/nginx/sites-enabled
