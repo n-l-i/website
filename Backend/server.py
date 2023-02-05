@@ -82,6 +82,7 @@ def _is_valid(token):
 
 @app.before_request
 def before_request():
+    request.origin_ip = get_origin_ip(request)
     request.arrival_time = datetime.now().strftime("%y%m%d-%H:%M:%S.%f")[:18]
     request.arrival_timestamp = time()
     if request.remote_addr != "127.0.0.1" and not is_proxied(request):
@@ -90,7 +91,6 @@ def before_request():
         data = json.dumps(request.get_json())
     except:
         data = "{}"
-    request.origin_ip = get_origin_ip(request)
     with open(LOGS_DIR.joinpath("all_requests.txt"),"a") as log_file:
         log_entry = f"{request.arrival_time}<[SEPARATOR]>{request.origin_ip}<[SEPARATOR]>{request.method}<[SEPARATOR]>{request.url}<[SEPARATOR]>{data}"
         log_entry = log_entry.replace(";","").replace("<[SEPARATOR]>",";").replace("\n","")
@@ -98,6 +98,7 @@ def before_request():
 
 @app.after_request
 def after_request(response):
+    request.origin_ip = get_origin_ip(request)
     request.departure_time = datetime.now().strftime("%y%m%d-%H:%M:%S.%f")[:18]
     try:
         request_data = json.dumps(request.get_json())
@@ -150,15 +151,19 @@ def error_generic(e):
 @app.errorhandler(404)
 def error_404(e):
     request.error = e
-    if request.url in ("https://josefine.dev/favicon.ico",
-                       "https://josefine.dev/apple-touch-icon.png",
-                       "https://josefine.dev/apple-touch-icon-precomposed.png"):
-        return make_response({}, 204)
     return make_response({}, 404)
 
 @app.route("/", methods = ["GET"])
 def root_page():
     return get_file("Frontend/Landing_page/index_live.html")
+
+@app.route("/<string:file_name>", methods = ["GET"])
+def root_file(file_name):
+    if file_name in ("favicon.ico",
+                     "apple-touch-icon.png",
+                     "apple-touch-icon-precomposed.png"):
+        return make_response({}, 204)
+    return make_response({}, 404)
 
 @app.route("/get_file/<path:file_path>", methods = ["GET"])
 def get_file(file_path):
