@@ -37,7 +37,7 @@ else
 fi
 
 while true; do
-    sleep 300
+    sleep 60
     changes=$(git fetch && git rev-list HEAD...origin/main --count)
     if [ $changes -gt 0 ]; then
         kill $background_pid;
