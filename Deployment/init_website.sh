@@ -77,9 +77,11 @@ fi
     if [[ ! -z "$production_mode" ]]; then
         python3 -m pip install gunicorn
         if [[ -z "$(command -v nginx)" ]]; then
+            deactivate
             [[ ! -z "$(command -v apt)" ]] && sudo apt install nginx
-            [[ ! -z "$(command -v yum)" ]] && sudo yum install nginx
+            [[ ! -z "$(command -v yum)" ]] && sudo amazon-linux-extras install "$(amazon-linux-extras | grep nginx | sed 's/.*nginx/nginx/' | sed 's/ .*//')"
             [[ -z "$(command -v apt)" && -z "$(command -v yum)" ]] && exit 1
+            source Deployment/venv/bin/activate
         fi
     fi
 
@@ -87,12 +89,38 @@ fi
 
     if [[ ! -z "$production_mode" ]]; then
         cd $website_directory
-        sudo rm -f /etc/nginx/sites-enabled/default
         sed "s;\[WEBSITE_DIR\];$website_directory;g" Deployment/nginx_config > Deployment/nginx_config_live
-        sudo rm -f /etc/nginx/sites-available/webserver
-        sudo cp Deployment/nginx_config_live /etc/nginx/sites-available/webserver
-        sudo rm -f /etc/nginx/sites-enabled/webserver
-        sudo ln -s /etc/nginx/sites-available/webserver /etc/nginx/sites-enabled/webserver
+        if [[ ! -z "$(command -v apt)" ]]; then
+            sudo mkdir -p /etc/nginx/sites-available
+            sudo mkdir -p /etc/nginx/sites-enabled
+            sudo rm -f /etc/nginx/sites-enabled/default
+            sudo rm -f /etc/nginx/sites-available/webserver
+            sudo cp Deployment/nginx_config_live /etc/nginx/sites-available/webserver
+            sudo rm -f /etc/nginx/sites-enabled/webserver
+            sudo ln -s /etc/nginx/sites-available/webserver /etc/nginx/sites-enabled/webserver
+        elif [[ ! -z "$(command -v yum)" ]]; then
+            sudo mkdir -p /etc/nginx/conf.d
+            sudo rm -f /etc/nginx/conf.d/webserver.conf
+            sudo cp Deployment/nginx_config_live /etc/nginx/conf.d/webserver.conf
+        else
+            exit 1
+        fi
+        if [[ ! -e "Deployment/SSL_cert/fullchain.pem" && ! -h "Deployment/SSL_cert/fullchain.pem" ]]; then
+            sudo systemctl stop nginx
+            (
+                sudo python3 -m venv /opt/certbot/
+                sudo /opt/certbot/bin/pip install --upgrade pip
+                sudo /opt/certbot/bin/pip install certbot certbot-nginx
+                sudo rm -f /usr/bin/certbot
+                sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+            ) || exit 1
+            sudo certbot certonly --nginx
+            sudo systemctl start nginx
+            sudo cp /etc/letsencrypt/live/josefine.dev/fullchain.pem Deployment/SSL_cert/fullchain.pem
+            sudo chown ec2-user: Deployment/SSL_cert/fullchain.pem
+            sudo cp /etc/letsencrypt/live/josefine.dev/privkey.pem Deployment/SSL_cert/privkey.pem
+            sudo chown ec2-user: Deployment/SSL_cert/privkey.pem
+        fi
         sudo systemctl restart nginx
     fi
 )
