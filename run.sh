@@ -26,20 +26,6 @@ if [[ -z "$dev_mode" && -z "$production_mode" ]] ||
     print_usage_instructions
     exit 1
 fi
-if [[ "$website_url" != *"://"* ]]; then
-    website_url="https://$website_url"
-fi
-if [[ "$website_url" != "http://"* && "$website_url" != "https://"* ]]; then
-    echo "Error: URL \"$website_url\" is not a valid HTTP URL."
-    exit 1
-fi
-if [[ "$website_url" == "http://"* ]]; then
-    echo "Warning: URL \"$website_url\" is not a HTTPS URL."
-    read -p "Do you wish to proceed anyway? (y/N): " answer
-    if [[ "$answer" != "y" && "$answer" != "Y" ]]; then
-        exit 1
-    fi
-fi
 
 /bin/bash Deployment/init_website.sh $mode_flag -u $website_url || exit 1
 /bin/bash Deployment/host_website.sh $mode_flag &

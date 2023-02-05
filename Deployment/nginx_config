@@ -1,8 +1,12 @@
 server {
+    server_name [DOMAIN_NAME];
+    listen 80;
+    return 301 https://$host$request_uri;
+}
+server {
+    server_name [DOMAIN_NAME];
     listen 443 ssl;
     listen [::]:443 ssl;
-    listen 80;
-    listen [::]:80;
 
     ssl_certificate [WEBSITE_DIR]/Deployment/SSL_cert/fullchain.pem;
     ssl_certificate_key [WEBSITE_DIR]/Deployment/SSL_cert/privkey.pem;
@@ -10,16 +14,15 @@ server {
     gzip off;
 
     ssl_protocols TLSv1.2 TLSv1.3;
-
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
-
     ssl_prefer_server_ciphers on;
-    ssl_session_cache shared:SSL:10m;
-
-    ssl_dhparam [WEBSITE_DIR]/Deployment/SSL_cert/dhparam.pem;
     ssl_ecdh_curve secp384r1;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 5m;
 
-    server_name _;
+    add_header X-Content-Type-Options nosniff;
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
+    add_header Content-Security-Policy 'frame-ancestors https://[DOMAIN_NAME]';
 
     location / {
         proxy_pass https://localhost:5001/;

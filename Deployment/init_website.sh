@@ -28,24 +28,10 @@ if [[ -z "$dev_mode" && -z "$production_mode" ]] ||
     print_usage_instructions
     exit 1
 fi
-if [[ "$website_url" != *"://"* ]]; then
-    website_url="https://$website_url"
-fi
-if [[ "$website_url" != "http://"* && "$website_url" != "https://"* ]]; then
-    echo "Error: URL \"$website_url\" is not a valid HTTP URL."
-    exit 1
-fi
-if [[ "$website_url" == "http://"* ]]; then
-    echo "Warning: URL \"$website_url\" is not a HTTPS URL."
-    read -p "Do you wish to proceed anyway? (y/N): " answer
-    if [[ "$answer" != "y" && "$answer" != "Y" ]]; then
-        exit 1
-    fi
-fi
 
 (
     cd $website_directory
-    sed "s;\[URL\];$website_url;g" Frontend/Landing_page/index.html > Frontend/Landing_page/index_live.html
+    sed "s;\[URL\];https://$website_url;g" Frontend/Landing_page/index.html > Frontend/Landing_page/index_live.html
 
     touch Log/all_requests.txt
     touch Log/failed_requests.txt
@@ -85,11 +71,10 @@ fi
         fi
     fi
 
-    openssl dhparam -dsaparam -out Deployment/SSL_cert/dhparam.pem 4096
-
     if [[ ! -z "$production_mode" ]]; then
         cd $website_directory
         sed "s;\[WEBSITE_DIR\];$website_directory;g" Deployment/nginx_config > Deployment/nginx_config_live
+        sed -i "s;\DOMAIN_NAME\];$website_url;g" Deployment/nginx_config_live
         if [[ ! -z "$(command -v apt)" ]]; then
             sudo mkdir -p /etc/nginx/sites-available
             sudo mkdir -p /etc/nginx/sites-enabled
@@ -114,7 +99,7 @@ fi
                 sudo rm -f /usr/bin/certbot
                 sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
             ) || exit 1
-            sudo certbot certonly --nginx
+            sudo certbot --nginx --rsa-key-size 4096 --no-redirect --staple-ocsp -d "$website_url"
             sudo systemctl start nginx
             sudo cp /etc/letsencrypt/live/josefine.dev/fullchain.pem Deployment/SSL_cert/fullchain.pem
             sudo chown ec2-user: Deployment/SSL_cert/fullchain.pem
