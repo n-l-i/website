@@ -1,16 +1,15 @@
 function sign_in() {
     email = document.getElementById("signin_email_input").value;
     password = document.getElementById("signin_password_input").value;
-    secret = document.getElementById("signin_secret_input").value;
-    if (email.length === 0 || password.length === 0 || secret.length === 0) {
-        show_status_message("Email, password and secret all need to be provided.");
+    if (email.length === 0 || password.length === 0) {
+        show_status_message("Both email and password need to be provided.");
         return;
     }
-    if (email.length < 3 || !email.includes("@") || password.length < 12 || secret.length < 12) {
-        show_status_message("Wrong email, password or secret.");
+    if (email.length < 3 || !email.includes("@") || password.length < 12) {
+        show_status_message("Wrong email or password.");
         return;
     }
-    hash(password,secret).then((password_hash) => {
+    hash(password,document.URL+email).then((password_hash) => {
         let data = {"username":email,
                     "password":password_hash};
         make_http_request('POST',HOST_URL+'/sign_in',data,load_sign_in);
@@ -30,10 +29,9 @@ function sign_up() {
     email = document.getElementById("signup_email_input").value;
     password = document.getElementById("signup_password_input").value;
     repeat_password = document.getElementById("signup_repeat_password_input").value;
-    secret = document.getElementById("signup_secret_input").value;
     fruit = document.getElementById("signup_fruit_input").value;
     if (email.length === 0 || password.length === 0) {
-        show_status_message("Email, password and secret all need to be provided.");
+        show_status_message("Both email and password need to be provided.");
         return;
     }
     if (email.length < 3 || !email.includes("@")) {
@@ -48,15 +46,11 @@ function sign_up() {
         show_status_message("The passwords do not match each other.");
         return;
     }
-    if (secret.length < 12) {
-        show_status_message("Your secret needs to be at least 12 characters long.");
-        return;
-    }
     if (fruit.length > 32) {
         show_status_message("The name of this fruit is too long.");
         return;
     }
-    hash(password,secret).then((password_hash) => {
+    hash(password,document.URL+email).then((password_hash) => {
         let data = {"username":email,
                     "password":password_hash,
                     "favourite_fruit":fruit};
