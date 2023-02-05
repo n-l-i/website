@@ -50,6 +50,7 @@ fi
 
     cd Deployment
     python3 -m venv venv
+    venv/bin/python3 -m pip install --upgrade pip
     source venv/bin/activate
     cd ..
     python3 -m pip install -r Backend/requirements.txt
