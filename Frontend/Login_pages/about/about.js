@@ -1,1 +1,1 @@
-Content_pages/about/about.js
+../../Content_pages/about/about.js
