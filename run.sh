@@ -39,7 +39,9 @@ fi
 while true; do
     sleep 60
     changes=$(git fetch && git rev-list HEAD...origin/main --count)
-    if [ $changes -gt 0 ]; then
+    # If changes have been pushed to git origin or
+    # if the flask/gunicorn server process has stopped
+    if [[ $changes -gt 0 || -z "$(ps -A | grep 'flask\|gunicorn')" ]]; then
         kill $background_pid;
         if [[ "$mode_flag" == "-d" ]]; then
             pkill flask
