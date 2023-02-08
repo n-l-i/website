@@ -18,6 +18,8 @@ function load_content_pages(){
     document.head.appendChild(newScript);
     prev_tab_name = localStorage.getItem("tab");
     open_tab(prev_tab_name);
+    localStorage.setItem("server_time_diff",0);
+    make_http_request('GET', HOST_URL+'/get_current_timestamp', {}, set_reference_time);
     setInterval(update_time_display, 100);
 }
 
@@ -61,10 +63,20 @@ function load_sign_out(response){
     window.location.reload();
 }
 
+function set_reference_time(response){
+    if (response.status_code !== 200 || response.success !== true) {
+        show_status_message(response.message);
+        return;
+    }
+    localStorage.setItem("server_time_diff",response.data-Date.now());
+    const server_time_diff = localStorage.getItem("server_time_diff");
+}
+
 function update_time_display(){
-    const timeElapsed = Date.now();
+    const server_time_diff = parseInt(localStorage.getItem("server_time_diff"));
+    const timeElapsed = Date.now()+server_time_diff;
     const today = new Date(timeElapsed);
     document.getElementById("current_date").innerHTML = today.toLocaleDateString();
     document.getElementById("current_time").innerHTML = today.toLocaleTimeString();
-    document.getElementById("current_timestamp").innerHTML = Date.now();
+    document.getElementById("current_timestamp").innerHTML = timeElapsed;
 }

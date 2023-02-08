@@ -7,6 +7,7 @@ from random import choice, uniform
 from ipaddress import ip_address, ip_network
 from functools import lru_cache
 from time import time
+import socket
 from .Login_pages.server_interface import (
     get_tab as _get_tab,
     sign_in as _sign_in,
@@ -267,3 +268,30 @@ def let_ai_make_move():
     thinking_time = float(str(request.get_json().get("thinking_time")))
     assert 0 <= thinking_time <= 60
     return make_response(_let_ai_make_move(thinking_time,token))
+
+@app.route("/get_current_timestamp", methods = ["GET"])
+def get_current_timestamp():
+    NTP_PORT = 123
+    BUFFER_SIZE = 48
+    MILLISECONDS_FROM_1900_TO_1970 = 2208988800*pow(10,3)
+    ntp_server = "utcnist3.colorado.edu"
+    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    leap_indicator = bin(0)[2:].rjust(2,"0")
+    version_number = bin(4)[2:].rjust(3,"0")
+    mode = bin(3)[2:].rjust(3,"0")
+    data = int((leap_indicator+version_number+mode).ljust(48*8,"0"),2).to_bytes(48,"big")
+    client.sendto(data, (ntp_server, NTP_PORT))
+    data_buffer, address = client.recvfrom(BUFFER_SIZE)
+    client.close()
+    if not data_buffer:
+        return make_response({}, 400)
+    ntp_response = bin(int.from_bytes(data_buffer,"big"))[2:].rjust(48*8,"0")
+    transmit_timestamp = ntp_response[320:384]
+    seconds = int(transmit_timestamp[:32],2)
+    milliseconds = int(pow(10,3)*int(transmit_timestamp[-32:],2)/pow(2,32))
+    ntp_timestamp = seconds*pow(10,3)+milliseconds
+    unix_timestamp = ntp_timestamp-MILLISECONDS_FROM_1900_TO_1970
+    return make_response(({"success": True,
+                           "message": "Successfully retrieved data.",
+                           "data": unix_timestamp
+                           },200))
