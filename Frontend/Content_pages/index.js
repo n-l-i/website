@@ -1,21 +1,6 @@
 load_content_pages();
 
 function load_content_pages(){
-    var newScript = document.createElement("script");
-    newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/home/home.js";
-    document.head.appendChild(newScript);
-    newScript = document.createElement("script");
-    newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/chess_ai/chess_ai.js";
-    document.head.appendChild(newScript);
-    newScript = document.createElement("script");
-    newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/network_simulator/network_simulator.js";
-    document.head.appendChild(newScript);
-    newScript = document.createElement("script");
-    newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/ssl_certs/ssl_certs.js";
-    document.head.appendChild(newScript);
-    newScript = document.createElement("script");
-    newScript.src = HOST_URL+"/get_file/Frontend/Content_pages/about/about.js";
-    document.head.appendChild(newScript);
     prev_tab_name = localStorage.getItem("tab");
     open_tab(prev_tab_name);
     localStorage.setItem("server_time_diff",0);
