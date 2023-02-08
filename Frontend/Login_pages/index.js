@@ -12,6 +12,7 @@ function load_login_pages(){
     document.head.appendChild(newScript);
     prev_tab_name = localStorage.getItem("tab");
     open_tab(prev_tab_name);
+    setInterval(update_time_display, 100);
 }
 
 function open_tab(tab_name){
@@ -33,4 +34,12 @@ function load_tab(response){
     if (response.data.tab_name === "signin") {
         list_favourite_fruits();
     }
+}
+
+function update_time_display(){
+    const timeElapsed = Date.now();
+    const today = new Date(timeElapsed);
+    document.getElementById("current_date").innerHTML = today.toLocaleDateString();
+    document.getElementById("current_time").innerHTML = today.toLocaleTimeString();
+    document.getElementById("current_timestamp").innerHTML = Date.now();
 }

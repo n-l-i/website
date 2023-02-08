@@ -18,6 +18,7 @@ function load_content_pages(){
     document.head.appendChild(newScript);
     prev_tab_name = localStorage.getItem("tab");
     open_tab(prev_tab_name);
+    setInterval(update_time_display, 100);
 }
 
 function open_tab(tab_name){
@@ -53,4 +54,12 @@ function load_sign_out(response){
     }
     localStorage.removeItem("token");
     window.location.reload();
+}
+
+function update_time_display(){
+    const timeElapsed = Date.now();
+    const today = new Date(timeElapsed);
+    document.getElementById("current_date").innerHTML = today.toLocaleDateString();
+    document.getElementById("current_time").innerHTML = today.toLocaleTimeString();
+    document.getElementById("current_timestamp").innerHTML = Date.now();
 }
