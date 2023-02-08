@@ -15,10 +15,15 @@
         </div>
         <div id="about_tab" class="clickable" onclick="open_tab('about');">About</div>
         <div id="home_tab" class="clickable" onclick="open_tab('home');">Home</div>
-        <div id="chess_ai_tab" class="clickable" onclick="open_tab('chess_ai');">Chess AI</div>
-        <div id="spbmap_tab" class="clickable" onclick="open_tab('spbmap');">Authentication protocol</div>
-        <div id="ssl_certs_tab" class="clickable" onclick="open_tab('ssl_certs');">CTL monitor [WIP]</div>
-        <div id="network_simulator_tab" class="clickable" onclick="open_tab('network_simulator');">Network Simulator [WIP]</div>
+        <div id="dropdown">
+            <div id="projects_tab">Projects</div>
+            <div class="dropdown-content">
+                <div id="chess_ai_tab" class="clickable" onclick="open_tab('chess_ai');">Chess AI</div>
+                <div id="spbmap_tab" class="clickable" onclick="open_tab('spbmap');">Authentication protocol</div>
+                <div id="ssl_certs_tab" class="clickable" onclick="open_tab('ssl_certs');">CTL monitor [WIP]</div>
+                <div id="network_simulator_tab" class="clickable" onclick="open_tab('network_simulator');">Network Simulator [WIP]</div>
+            </div>
+        </div>
     </div>
     <div id="tab_content"></div>
     <div id="status_msg">

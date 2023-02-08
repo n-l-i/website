@@ -35,14 +35,18 @@ body {
     margin: 5px;
 }
 
-#clock, #signout_button, #about_tab, #home_tab, #ssl_certs_tab, #chess_ai_tab, #network_simulator_tab, #spbmap_tab {
+#clock, #signout_button, #about_tab, #home_tab, #projects_tab, #chess_ai_tab, #spbmap_tab, #ssl_certs_tab, #network_simulator_tab {
     flex-grow: 1;
+    flex-basis: 0px;
     border-style: solid;
     padding: 5px;
     margin: 5px;
     min-width: 0px;
     overflow: hidden;
     background-color: antiquewhite;
+}
+#signout_button {
+    white-space: nowrap;
 }
 
 #clock {
@@ -54,7 +58,9 @@ body {
     margin-right: 0px;
     background-color: white;
 }
-
+#clock p {
+    white-space: nowrap;
+}
 #current_date {
     font-size: 12px;
 }
@@ -110,3 +116,30 @@ body {
     flex-shrink: 1;
     flex-grow: 1;
 }
+
+#dropdown {
+    position: relative;
+    flex-grow: 1;
+    flex-basis: 0px;
+}
+
+#projects_tab {
+    height: 80%; /* The box is slightly shorter than the others without this */
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 0%;
+    width: 100%;
+    background-color: white;
+    border-style: solid;
+    flex-grow: 1;
+}
+
+.dropdown-content div {
+  display: block;
+}
+
+#projects_tab:hover ~ .dropdown-content {display: block;}
+.dropdown-content:hover {display: block;}

@@ -29,6 +29,7 @@ body {
 }
 
 #status_msg_box, #status_msg_ack, #clock, #about_tab, #signin_tab {
+    flex-basis: 0px;
     flex-shrink: 0;
     border-style: solid;
     padding: 5px;
@@ -43,7 +44,9 @@ body {
     padding-bottom: 0px;
     margin-right: 0px;
 }
-
+#clock p {
+    white-space: nowrap;
+}
 #current_date {
     font-size: 12px;
 }

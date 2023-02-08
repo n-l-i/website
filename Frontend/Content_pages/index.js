@@ -36,6 +36,11 @@ function open_tab(tab_name){
 }
 
 function load_tab(response){
+    if (response.data.tab_name === "home" || response.data.tab_name === "about") {
+        document.getElementById("projects_tab").innerHTML = "Projects";
+    } else {
+        document.getElementById("projects_tab").innerHTML = document.getElementById(response.data.tab_name+"_tab").innerHTML;
+    }
     document.getElementById("tab_content").innerHTML = response.data.html;
     if (response.data.tab_name === "chess_ai") {
         load_chess_ai();
