@@ -28,7 +28,7 @@ body {
     cursor: pointer;
 }
 
-#status_msg_box, #status_msg_ack, #clock, #about_tab, #signin_tab {
+#status_msg_box, #status_msg_ack, #about_tab, #signin_tab {
     flex-basis: 0px;
     flex-shrink: 0;
     border-style: solid;
@@ -40,9 +40,10 @@ body {
     border-radius: 15px;
     padding-left: 5px;
     padding-right: 5px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    margin-right: 0px;
+    margin: 5px;
+    background-color: white;
+    border-style: solid;
+    flex-shrink: 0;
 }
 #clock p {
     white-space: nowrap;

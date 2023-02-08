@@ -35,7 +35,7 @@ body {
     margin: 5px;
 }
 
-#clock, #signout_button, #about_tab, #home_tab, #projects_tab, #chess_ai_tab, #spbmap_tab, #ssl_certs_tab, #network_simulator_tab {
+#about_tab, #home_tab, #projects_tab, #chess_ai_tab, #spbmap_tab, #ssl_certs_tab, #network_simulator_tab {
     flex-grow: 1;
     flex-basis: 0px;
     border-style: solid;
@@ -47,16 +47,22 @@ body {
 }
 #signout_button {
     white-space: nowrap;
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    min-width: 0px;
+    overflow: hidden;
+    background-color: lightgray;
 }
 
 #clock {
     border-radius: 15px;
     padding-left: 5px;
     padding-right: 5px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    margin-right: 0px;
+    margin: 5px;
     background-color: white;
+    border-style: solid;
+    flex-shrink: 0;
 }
 #clock p {
     white-space: nowrap;
