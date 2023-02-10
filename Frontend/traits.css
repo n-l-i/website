@@ -1,0 +1,24 @@
+.clickable {
+    transition: transform 0.01s ease;
+}
+
+.clickable:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.writable:hover {
+    cursor: text;
+}
+
+.selected {
+    background-color: lightcoral;
+}
+
+.blurred {
+    filter: blur(5px);
+}
+
+.warning {
+    background-color: lightcoral;
+}

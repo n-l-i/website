@@ -1,36 +1,28 @@
-<!DOCTYPE html>
-<meta charset="UTF-8">
-<html>
-<head>
-    <link rel="icon" href="data:,">
-    <link href="get_file/Frontend/Content_pages/index.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-    <div id="tabs">
-        <div id="signout_button" class="clickable" onclick="sign_out();">Sign out</div>
-        <div id="clock">
-            <p id="current_date"></p>
-            <p id="current_time"></p>
-            <p id="current_timestamp"></p>
+<div class="item item--big container container--col">
+    <div id="tab_menu" class="item item--fill container container--row">
+        <div class="item container container--visible button clickable" onclick="sign_out();">Sign out</div>
+        <div id="clock" class="item container container--visible container--col container--clock">
+            <p id="current_date" class="item item--fill container__clock_date"></p>
+            <p id="current_time" class="item item--fill container__clock_time"></p>
+            <p id="current_timestamp" class="item item--fill container__clock_timestamp"></p>
         </div>
-        <div id="about_tab" class="clickable" onclick="open_tab('about');">About</div>
-        <div id="home_tab" class="clickable" onclick="open_tab('home');">Home</div>
-        <div id="dropdown">
-            <div id="projects_tab">Projects</div>
-            <div class="dropdown-content">
-                <div id="chess_ai_tab" class="clickable" onclick="open_tab('chess_ai');">Chess AI</div>
-                <div id="spbmap_tab" class="clickable" onclick="open_tab('spbmap');">Authentication protocol</div>
-                <div id="ssl_certs_tab" class="clickable" onclick="open_tab('ssl_certs');">CTL monitor [WIP]</div>
-                <div id="network_simulator_tab" class="clickable" onclick="open_tab('network_simulator');">Network Simulator [WIP]</div>
+        <div id="about_tab" class="item item--big container container--visible container--tab clickable" onclick="open_tab('about');">About</div>
+        <div id="home_tab" class="item item--big container container--visible container--tab clickable" onclick="open_tab('home');">Home</div>
+        <div class="item item--big container container--col container--dropdown">
+            <div id="projects_tab" class="item item--fill container container--visible container--tab container__dropdown_header container__dropdown_header--hover">Projects</div>
+            <div class="item item--big item--fill container container--visible container--tab container__dropdown_content">
+                <div id="chess_ai_tab" class="item item--fill container container--visible container--tab clickable" onclick="open_tab('chess_ai');">Chess AI</div>
+                <div id="spbmap_tab" class="item item--fill container container--visible container--tab clickable" onclick="open_tab('spbmap');">Authentication protocol</div>
+                <div id="ssl_certs_tab" class="item item--fill container container--visible container--tab clickable" onclick="open_tab('ssl_certs');">CTL monitor [WIP]</div>
+                <div id="network_simulator_tab" class="item item--fill container container--visible container--tab clickable" onclick="open_tab('network_simulator');">Network Simulator [WIP]</div>
             </div>
         </div>
     </div>
-    <div id="tab_content"></div>
-    <div id="status_msg">
-        <div id="status_msg_box">
-            <div id="status_msg_text"></div>
-            <div id="status_msg_ack" class="clickable" onclick="show_status_message('');">Ok</div>
+    <div id="tab_content" class="item item--big item--fill container"></div>
+    <div id="status_msg_background" class="item item--big container container--hidden container--fixed_position">
+        <div id="status_msg_box" class="container container--visible">
+            <div id="status_msg_text" class="item"></div>
+            <divclass="item clickable" onclick="show_status_message('');">Ok</div>
         </div>
     </div>
-</body>
-</html>
+</div>

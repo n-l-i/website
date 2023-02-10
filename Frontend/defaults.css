@@ -1,0 +1,22 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body, body * {
+    width: fit-content;
+    cursor: default;
+    display: block;
+    border-style: none;
+    border-width: 3px;
+}

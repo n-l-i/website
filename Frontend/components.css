@@ -1,0 +1,235 @@
+:root {
+    --padding: 5px;
+    --margin: 5px;
+}
+
+.container {
+}
+
+.container--big {
+    height: 100%;
+    width: 100%;
+}
+
+.container--visible {
+    border-style: solid;
+    padding: var(--padding);
+    margin: var(--margin);
+    background-color: lightskyblue;
+    border-radius: 5px;
+}
+
+.container--row {
+    display: flex;
+    flex-flow: row;
+}
+
+.container--col {
+    display: flex;
+    flex-flow: column;
+}
+
+.container--fixed_position {
+    position: fixed;
+}
+
+.container--hidden {
+    display: none;
+    opacity: 0;
+    transition: all 0.2s ease-out;
+}
+
+.container--hidden.visible{
+    display: block;
+    opacity: 1;
+}
+
+.container--clock {
+    border-radius: 25px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: white;
+    white-space: nowrap;
+}
+
+.container--signout {
+    background-color: lightgray;
+    white-space: nowrap;
+}
+
+.container--tab {
+    background-color: antiquewhite;
+    white-space: nowrap;
+}
+
+.container--dropdown {
+    position: relative;
+}
+
+.container__dropdown_header {
+}
+
+.container__dropdown_content {
+    display: none;
+    position: absolute;
+    top: calc(100% - var(--margin)*2);
+    width: 100%;
+    background-color: white;
+    border-style: solid;
+    flex-grow: 1;
+}
+
+.container--dropdown:hover > .container__dropdown_header--hover.container--visible {
+    padding: calc(var(--padding)*2);
+    margin: 0px;
+}
+
+.container__dropdown_header--hover:hover ~ .container__dropdown_content, .container__dropdown_content:hover {
+    display: block;
+}
+
+.container__clock_date {
+    font-size: 12px;
+    text-align: center;
+}
+
+.container__clock_time {
+    text-align: center;
+}
+
+.container__clock_timestamp {
+    text-align: center;
+    display: none;
+}
+
+.item {
+    flex-basis: auto;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+*:not(.container--row):not(.container--col) > .item--big,
+*:not(.container--row):not(.container--col) > .item--fill {
+    height: 100%;
+    width: 100%;
+}
+
+*:not(.container--row):not(.container--col) > .container--visible.item--big,
+*:not(.container--row):not(.container--col) > .container--visible.item--fill {
+    height: calc(100% - var(--margin)*2);
+    width: calc(100% - var(--margin)*2);
+}
+
+.container--row > .item--big,
+.container--col > .item--big {
+    flex-basis: 0px;
+    flex-grow: 1;
+}
+
+.container--row > .item--fill {
+    height: 100%;
+}
+.container--row > .container--visible.item--fill {
+    height: calc(100% - var(--margin)*2);
+}
+
+.container--col > .item--fill {
+    width: 100%;
+}
+.container--col > .container--visible.item--fill {
+    width: calc(100% - var(--margin)*2);
+}
+
+/*.menu {
+}
+
+.menu--row {
+    display: flex;
+    flex-flow: row;
+}
+
+.menu--dropdown {
+    display: flex;
+    flex-flow: col;
+    position: relative;
+}
+
+.menu__item {
+    border-style: solid;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightskyblue;
+    flex-basis: 0px;
+    flex-grow: 1;
+}
+
+.menu__item--clock {
+    border-radius: 15px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: white;
+    flex-basis: auto;
+    flex-shrink: 0;
+    flex-grow: 0;
+    white-space: nowrap;
+}
+
+.menu__item--signout {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: lightgray;
+    flex-basis: auto;
+    flex-shrink: 0;
+    flex-grow: 0;
+    white-space: nowrap;
+}
+
+.menu__date {
+    font-size: 12px;
+}
+
+.menu__time {
+}
+
+.menu__timestamp {
+    display: none;
+}
+
+.menu__dropdown_header {
+}
+
+.menu__dropdown_content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    background-color: white;
+    border-style: solid;
+    flex-grow: 1;
+}
+
+.menu--dropdown:hover > .menu__dropdown_header--hover.menu__item {
+    padding: 10px;
+    margin: 0px;
+}
+
+.menu__dropdown_header--hover:hover ~ .menu__dropdown_content, .menu__dropdown_content:hover {
+    display: block;
+}*/
+
+.input {
+    min-width: 100%;
+    width: 0px;
+    padding: var(--padding);
+    margin-top: var(--margin);
+    margin-bottom: var(--margin);
+    border-radius: 2px;
+    background-color: white;
+}
+
+.button {
+    border-radius: 5px;
+    padding: var(--padding);
+    margin: var(--margin);
+    background-color: #dddddd;
+}

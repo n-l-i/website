@@ -156,7 +156,7 @@ def error_404(e):
 
 @app.route("/", methods = ["GET"])
 def root_page():
-    return get_file("Frontend/Landing_page/index_live.html")
+    return get_file("Frontend/index_live.html")
 
 @app.route("/<string:file_name>", methods = ["GET"])
 def root_file(file_name):

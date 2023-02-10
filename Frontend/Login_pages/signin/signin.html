@@ -1,36 +1,35 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <meta charset="UTF-8">
-<link href="get_file/Frontend/Login_pages/signin/signin.css" rel="stylesheet" type="text/css">
+<link href="get_file/Frontend/Login_pages/signin/signin.css" rel="stylesheet" type="text/css">-->
 
-<div id="tab_area">
-    <div id="signin_info">
-        To access the contents of this website you need to sign in.
-        You can create an account under "Sign up" and then use the registered credentials here.
+<div class="item item--big container container--col">
+    <div class="item item--fill container container--visible">
+        <p>To access the contents of this website you need to sign in.
+        You can create an account under "Sign up" and then use the registered credentials here.</p>
     </div>
-    <div id="input_area">
-        <div id="signin_area">
+    <div class="item item--fill container container--row">
+        <div class="item item--big container container--visible container--col">
             <h2>Sign in</h2>
             <br>
             <p>Email:</p>
-            <input type="email" id="signin_email_input" placeholder="email@domain.com"><br>
+            <input type="email" id="signin_email_input" class="input writable" placeholder="email@domain.com"><br>
             <p>Password:</p>
-            <input type="password" id="signin_password_input" placeholder="•••••"><br>
-            <input type="button" class="button clickable" id="signin_button" value="Sign in" onclick="sign_in();return false;">
+            <input type="password" id="signin_password_input" class="input writable" placeholder="•••••"><br>
+            <div type="button" class="button clickable" onclick="sign_in();return false;">Sign in</div>
         </div>
-        <div id="signup_area">
+        <div class="item item--big container container--visible container--col">
             <h2>Sign up</h2>
             <br>
             <p>Email:</p>
-            <input type="email" id="signup_email_input" placeholder="email@domain.com"><br>
+            <input type="email" id="signup_email_input" class="input writable" placeholder="email@domain.com"><br>
             <p>Password: </p>
-            <input type="password" id="signup_password_input" minlength="12" placeholder="•••••"><br>
+            <input type="password" id="signup_password_input" class="input writable" minlength="12" placeholder="•••••"><br>
             <p>Repeat password: </p>
-            <input type="password" id="signup_repeat_password_input" minlength="12" placeholder="•••••"><br>
+            <input type="password" id="signup_repeat_password_input" class="input writable" minlength="12" placeholder="•••••"><br>
             <p>Favourite fruit:</p>
-            <input type="text" id="signup_fruit_input" placeholder="fruit name"><br>
-            <input type="button" class="button clickable" id="signup_button" value="Sign up" onclick="sign_up();return false;">
+            <input type="text" id="signup_fruit_input" class="input writable" placeholder="fruit name"><br>
+            <div type="button" class="button clickable" onclick="sign_up();return false;">Sign up</div>
         </div>
     </div>
-    <div id="fruits_log">
-    </div>
+    <div id="fruits_log" class="item item--big item--fill container container--visible"></div>
 </div>
