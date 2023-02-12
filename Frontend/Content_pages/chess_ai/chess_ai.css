@@ -1,66 +1,33 @@
-#header {
-    flex-shrink: 0;
-    border-style: solid;
-    padding: 5px;
-    margin: 5px;
-    background-color: lightskyblue;
-}
-
-#chess_ai_tab, #projects_tab {
-    background-color: lightcoral;
-}
-
-#chess_timer {
-    display: flex;
-    flex-direction: row;
-}
-
-#tab_area {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-    padding-bottom: 65px;
-}
-
-#input_area {
-    flex-shrink: 0;
-    border-style: solid;
-    padding: 5px;
-    margin: 5px;
-    background-color: lightskyblue;
-    overflow:scroll;
-    font-family: monospace, monospace;
-}
-
-#thinktime_input {
-    width: 100px;
-}
-
-#chess_ai {
-    flex-grow: 1;
-    border-style: solid;
-    margin: 5px;
+.container--chess_board {
+    padding: 0px;
     background-color: antiquewhite;
     overflow: scroll;
-    display: flex;
-    flex-direction: column;
 }
 
-#gameover_msg {
-    padding: 5px;
+.container--chess_tile {
+    border-style: none;
+    padding: 0px;
+    margin: 0px;
+    border-radius: 0px;
+    margin: 0px;
+    padding: 0px;
+    border-style: none;
+    border-radius: 0px;
+    padding: 0px;
+    font-size: 45px;
+    justify-content: center;
+    align-items: center;
 }
 
 .chess_tile_row {
+    margin: 0px;
+    padding: 0px;
     flex-grow: 1;
     display: flex;
     flex-direction: row;
-    height: 100px;
 }
 
 .light_tile, .dark_tile {
-    width: 100px;
-    flex-grow: 1;
     font-size: 45px;
     text-align: center;
 }

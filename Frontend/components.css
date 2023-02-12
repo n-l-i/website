@@ -22,11 +22,15 @@
 .container--row {
     display: flex;
     flex-flow: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .container--col {
     display: flex;
     flex-flow: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .container--fixed_position {
@@ -42,6 +46,10 @@
 .container--hidden.visible{
     display: block;
     opacity: 1;
+}
+
+.container--wrap {
+    flex-wrap: wrap;
 }
 
 .container--clock {
@@ -225,6 +233,11 @@
     margin-bottom: var(--margin);
     border-radius: 2px;
     background-color: white;
+}
+
+.input--fit_content {
+    width: fit-content;
+    min-width: 0px;
 }
 
 .button {

@@ -22,3 +22,7 @@
 .warning {
     background-color: lightcoral;
 }
+
+.inline {
+    display: inline;
+}

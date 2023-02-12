@@ -15,8 +15,13 @@ html {
 
 body, body * {
     width: fit-content;
+    height: fit-content;
     cursor: default;
     display: block;
     border-style: none;
     border-width: 3px;
+}
+
+script {
+    display: none;
 }

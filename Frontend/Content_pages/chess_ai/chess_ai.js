@@ -1,4 +1,5 @@
 function load_chess_ai(){
+    adjust_layout();
     localStorage.setItem("selected_tiles","");
     localStorage.setItem("targeted_tiles","");
     localStorage.setItem("turn",null);
@@ -17,12 +18,27 @@ function load_chess_ai(){
     check_colour();
 }
 
+window.onresize = adjust_layout;
+
+previous_display_board_response = null;
+
+function adjust_layout() {
+    if (window.innerHeight < window.innerWidth) {
+        document.getElementById("chess_page").innerHTML = document.getElementById("horizontal_layout").innerHTML;
+    } else {
+        document.getElementById("chess_page").innerHTML = document.getElementById("vertical_layout").innerHTML;
+    }
+    if (previous_display_board_response) {
+        display_board(previous_display_board_response);
+    }
+}
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function count_down_timer(){
-    if (document.getElementById("chess_timer") == null) {
+    if (!document.getElementById("white_timer")) {
         return;
     }
     if (localStorage.getItem("turn") == null) {
@@ -34,7 +50,8 @@ function count_down_timer(){
 
 function restart_game(){
     localStorage.setItem("new_turn_timestamp",Date.now());
-    document.getElementById("header").innerHTML = "On this page resides a chess AI I've written.<br><div id=\"chess_timer\">Game timer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;White:&nbsp;<p id=\"black_timer\">600</p>,&nbsp;Black:&nbsp;<p id=\"white_timer\">600</p></div>";
+    document.getElementById("white_timer").innerHTML = "600";
+    document.getElementById("black_timer").innerHTML = "600";
     colour = localStorage.getItem("selected_colour");
     mode = localStorage.getItem("mode");
     document.getElementById("move_stack").innerHTML = "";
@@ -72,6 +89,7 @@ function display_board(response){
         show_status_message(response.message);
         return;
     }
+    previous_display_board_response = response;
     let ai_turn = response.data.legal_moves.length == 0;
     if (String(localStorage.getItem("turn")) != "white") {
         localStorage.setItem("turn","white");
@@ -163,12 +181,12 @@ function render_board(text_board,last_move,ai_turn){
         cols = ["h","g","f","e","d","c","b","a"];
     }
     rows.forEach(row => {
-        board += "<div class=\"chess_tile_row\">";
+        board += "<div class=\"item item--big item--fill container container--row\">";
         cols.forEach(col => {
             if (ai_turn) {
-                board += "<div class=\""+tile_class+"\" id=\""+col+row+"\">";
+                board += "<div class=\"item item--big item--fill container container--chess_tile "+tile_class+"\" id=\""+col+row+"\">";
             } else {
-                board += "<div class=\""+tile_class+" clickable\" id=\""+col+row+"\" onClick=\"select_tile(this.id)\">";
+                board += "<div class=\"item item--big item--fill container container--chess_tile "+tile_class+" clickable\" id=\""+col+row+"\" onClick=\"select_tile(this.id)\">";
             }
             board += "<pre>";
             let piece = text_board[col+row];

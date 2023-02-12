@@ -1,7 +1,3 @@
-#ssl_certs_tab, #projects_tab {
-    background-color: lightcoral;
-}
-
 #tab_area {
     display: flex;
     height: 100%;
