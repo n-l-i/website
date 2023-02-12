@@ -31,7 +31,7 @@ fi
 
 (
     cd $website_directory
-    sed "s;\[URL\];https://$website_url;g" Frontend/Landing_page/index.html > Frontend/Landing_page/index_live.html
+    sed "s;\[URL\];https://$website_url;g" Frontend/index.html > Frontend/Landing_page/index_live.html
 
     touch Log/all_requests.txt
     touch Log/failed_requests.txt
