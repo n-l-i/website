@@ -1,5 +1,6 @@
 #!/bin/bash
 
+website_directory="$(realpath "$0" | xargs dirname)"
 dev_mode=""
 production_mode=""
 mode_flag=""
@@ -26,6 +27,10 @@ if [[ -z "$dev_mode" && -z "$production_mode" ]] ||
     print_usage_instructions
     exit 1
 fi
+
+cd $website_directory
+
+git pull
 
 /bin/bash Deployment/init_website.sh $mode_flag -u $website_url || exit 1
 /bin/bash Deployment/host_website.sh $mode_flag &
