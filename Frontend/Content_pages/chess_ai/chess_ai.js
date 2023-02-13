@@ -23,10 +23,17 @@ window.onresize = adjust_layout;
 previous_display_board_response = null;
 
 function adjust_layout() {
-    if (window.innerHeight < window.innerWidth) {
-        document.getElementById("chess_page").innerHTML = document.getElementById("horizontal_layout").innerHTML;
-    } else {
+    let move_stack = null;
+    if (document.getElementById("move_stack")) {
+        move_stack = document.getElementById("move_stack").innerHTML;
+    }
+    if (window.innerHeight > window.innerWidth) {
         document.getElementById("chess_page").innerHTML = document.getElementById("vertical_layout").innerHTML;
+    } else {
+        document.getElementById("chess_page").innerHTML = document.getElementById("horizontal_layout").innerHTML;
+    }
+    if (move_stack) {
+        document.getElementById("move_stack").innerHTML = move_stack;
     }
     if (previous_display_board_response) {
         display_board(previous_display_board_response);
@@ -54,7 +61,7 @@ function restart_game(){
     document.getElementById("black_timer").innerHTML = "600";
     colour = localStorage.getItem("selected_colour");
     mode = localStorage.getItem("mode");
-    document.getElementById("move_stack").innerHTML = "";
+    document.getElementById("move_stack").innerHTML = '<div class="item container container--row"></div>';
     localStorage.setItem("turn",colour);
     token = localStorage.getItem("token");
     reset_selected_tiles();
@@ -74,7 +81,7 @@ function select_colour(){
 }
 
 function select_thinktime(){
-    thinktime = document.getElementById("thinktime_input").value
+    thinktime = document.getElementById("thinktime_input").value;
     localStorage.setItem("think_time",parseFloat(thinktime));
     check_thinktime();
 }
@@ -100,15 +107,7 @@ function display_board(response){
     localStorage.setItem("legal_moves",response.data.legal_moves);
     if (typeof response.data.move != "undefined"){
         let move = response.data.move.slice(0,2)+"&#8594;"+response.data.move.slice(2);
-        let last_move_row = String(document.getElementById("move_stack").innerHTML).split("<br>")[0];
-        if (last_move_row.length == 0) {
-            document.getElementById("move_stack").innerHTML = move;
-        } else if (last_move_row.length < 7){
-            let other_move_rows = String(document.getElementById("move_stack").innerHTML).slice(last_move_row.length);
-            document.getElementById("move_stack").innerHTML = String(last_move_row+",").padEnd(8).replaceAll(" ","&nbsp;")+move+other_move_rows;
-        } else {
-            document.getElementById("move_stack").innerHTML = move+"<br>"+document.getElementById("move_stack").innerHTML;
-        }
+        update_move_stack(move);
     }
     if (typeof response.data.game_is_over !== "undefined"){
         document.getElementById("chess_ai").innerHTML = "<div id=\"gameover_msg\">Game has ended, "+response.data.end_reason+".<br>Winner: "+response.data.winner+"</div><br>"+document.getElementById("chess_ai").innerHTML;
@@ -116,10 +115,21 @@ function display_board(response){
         return;
     }
     if (ai_turn){
-        document.getElementById("chess_ai").innerHTML = "Waiting for AI to make a move...<br>"+document.getElementById("chess_ai").innerHTML;
+        document.getElementById("chess_ai").innerHTML = "<div>Waiting for AI to make a move...</div>"+document.getElementById("chess_ai").innerHTML;
         token = localStorage.getItem("token");
         think_time = localStorage.getItem("think_time");
         make_http_request('POST', HOST_URL+'/let_ai_make_move', {"thinking_time":think_time,"token":token}, display_board);
+    }
+}
+
+function update_move_stack(move){
+    let top_row = document.getElementById("move_stack").children[0];
+    if (document.getElementById("move_stack").children[0].children.length == 0) {
+        document.getElementById("move_stack").children[0].innerHTML = "<p>"+move+"</p>";
+    } else if (document.getElementById("move_stack").children[0].children.length == 1){
+        document.getElementById("move_stack").children[0].innerHTML += "<p>,&nbsp;</p><p>"+move+"</p>";
+    } else {
+        document.getElementById("move_stack").innerHTML = '<div class="item container container--row"><p>'+move+'</p></div>'+document.getElementById("move_stack").innerHTML;
     }
 }
 

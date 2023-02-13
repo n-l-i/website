@@ -26,3 +26,7 @@
 .inline {
     display: inline;
 }
+
+.overflow-auto {
+    overflow: auto;
+}

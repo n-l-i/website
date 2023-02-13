@@ -20,6 +20,8 @@ body, body * {
     display: block;
     border-style: none;
     border-width: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 script {

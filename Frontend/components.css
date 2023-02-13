@@ -22,15 +22,11 @@
 .container--row {
     display: flex;
     flex-flow: row;
-    justify-content: center;
-    align-items: center;
 }
 
 .container--col {
     display: flex;
     flex-flow: column;
-    justify-content: center;
-    align-items: center;
 }
 
 .container--fixed_position {
@@ -50,6 +46,14 @@
 
 .container--wrap {
     flex-wrap: wrap;
+}
+
+.container--no_text_wrap {
+    white-space: nowrap;
+}
+
+.container--height-100px {
+    max-height: 100px;
 }
 
 .container--clock {
