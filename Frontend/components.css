@@ -52,8 +52,12 @@
     white-space: nowrap;
 }
 
-.container--height-100px {
-    max-height: 100px;
+.container--height-2em {
+    max-height: calc(2em + var(--margin));
+}
+
+.container--height-12em {
+    max-height: calc(12em + 10*var(--margin));
 }
 
 .container--clock {
@@ -136,6 +140,11 @@
 .container--row > .item--big,
 .container--col > .item--big {
     flex-basis: 0px;
+    flex-grow: 1;
+}
+
+.container--row > .item--big-fit,
+.container--col > .item--big-fit {
     flex-grow: 1;
 }
 
