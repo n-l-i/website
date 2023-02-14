@@ -32,6 +32,7 @@ function adjust_layout() {
     } else {
         document.getElementById("chess_page").innerHTML = document.getElementById("horizontal_layout").innerHTML;
     }
+    document.getElementById("chess_menu").innerHTML = document.getElementById("chess_menu_contents").innerHTML;
     if (move_stack) {
         document.getElementById("move_stack").innerHTML = move_stack;
     }
