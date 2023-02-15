@@ -94,6 +94,7 @@
     background-color: white;
     border-style: solid;
     flex-grow: 1;
+    z-index: 999;
 }
 
 .container--dropdown:hover > .container__dropdown_header--hover.container--visible {

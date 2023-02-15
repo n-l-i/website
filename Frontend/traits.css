@@ -35,3 +35,16 @@
     overflow: visible;
 }
 
+.shrinkable {
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.unshrinkable {
+    flex-shrink: 0;
+    min-width: fit-content;
+}
+
+.justify-right {
+    right: 0;
+}
