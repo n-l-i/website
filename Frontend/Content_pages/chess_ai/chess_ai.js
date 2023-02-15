@@ -6,9 +6,11 @@ function load_chess_ai(){
     localStorage.setItem("legal_moves",null);
     localStorage.setItem("selected_colour",null);
     localStorage.setItem("mode",null);
-    localStorage.setItem("new_turn_timestamp",null);
+    localStorage.setItem("turn_start_timestamp",null);
+    localStorage.getItem("white_time_left",null);
+    localStorage.getItem("black_time_left",null);
     localStorage.getItem("think_time",null);
-    setInterval(count_down_timer, 1000);
+    setInterval(count_down_timer, 100);
     select_thinktime();
     select_mode();
     select_colour();
@@ -53,13 +55,27 @@ function count_down_timer(){
         return;
     }
     let timer_id = localStorage.getItem("turn")+"_timer";
-    document.getElementById(timer_id).innerHTML = String(parseInt(document.getElementById(timer_id).innerHTML)-1);
+    let time_left_key = localStorage.getItem("turn")+"_time_left";
+    let time_step = Date.now()-parseInt(localStorage.getItem("turn_start_timestamp"));
+    let time_left = parseInt(localStorage.getItem(time_left_key))-time_step;
+    if (time_left >= 20000 || time_left <= 0) {
+        time_left = Math.ceil(time_left/1000);
+    } else {
+        time_left = (Math.ceil(time_left/100)/10).toFixed(1);
+    }
+    if (time_left >= 0) {
+        document.getElementById(timer_id).innerHTML = String(time_left);
+    } else {
+        document.getElementById(timer_id).innerHTML = String(-time_left)+" (overtime)";
+    }
 }
 
 function restart_game(){
-    localStorage.setItem("new_turn_timestamp",Date.now());
+    localStorage.setItem("turn_start_timestamp",Date.now());
     document.getElementById("white_timer").innerHTML = "600";
+    localStorage.setItem("white_time_left", 600000);
     document.getElementById("black_timer").innerHTML = "600";
+    localStorage.setItem("black_time_left", 600000);
     colour = localStorage.getItem("selected_colour");
     mode = localStorage.getItem("mode");
     document.getElementById("move_stack").innerHTML = '<div class="item container container--row"></div>';
@@ -90,19 +106,24 @@ function select_thinktime(){
 function display_board(response){
     // If the request was sent before the turn was started, ignore the response.
     // This can happen with slow AI responses.
-    if (response.timestamp < localStorage.getItem("new_turn_timestamp")){
+    if (response.timestamp < localStorage.getItem("turn_start_timestamp")){
         return;
     }
     if (response.status_code !== 200 || response.success !== true) {
         show_status_message(response.message);
         return;
     }
+    let time_spent = Date.now()-localStorage.getItem("turn_start_timestamp");
+    localStorage.setItem("turn_start_timestamp",Date.now());
+    let time_left = localStorage.getItem("turn_start_timestamp");
     previous_display_board_response = response;
     let ai_turn = response.data.legal_moves.length == 0;
     if (String(localStorage.getItem("turn")) != "white") {
         localStorage.setItem("turn","white");
+        localStorage.setItem("black_time_left", parseInt(localStorage.getItem("black_time_left"))-time_spent);
     } else {
         localStorage.setItem("turn","black");
+        localStorage.setItem("white_time_left", parseInt(localStorage.getItem("white_time_left"))-time_spent);
     }
     render_board(response.data.board,response.data.move,ai_turn);
     localStorage.setItem("legal_moves",response.data.legal_moves);
