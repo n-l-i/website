@@ -15,10 +15,12 @@ window.onresize = function(){
 function open_start_tab(response){
     if (response.status_code !== 200 || response.success !== true || response.data !== true) {
         replace_html(HOST_URL+"/get_file/Frontend/Login_pages/index.html");
+        init_page();
         localStorage.removeItem("token");
         return;
     }
     replace_html(HOST_URL+"/get_file/Frontend/Content_pages/index.html");
+    init_page();
 }
 
 function replace_html(url){
@@ -27,7 +29,13 @@ function replace_html(url){
     xmlhttp.onload = function () {
         let html = xmlhttp.response;
         document.getElementsByTagName("body")[0].innerHTML = html;
-        init_page();
+        if (localStorage.getItem("token")) {
+            localStorage.setItem("tab", "home");
+            init_page();
+        } else {
+            localStorage.setItem("tab", "signin");
+            init_page();
+        }
     };
     xmlhttp.timeout = 300000;
     xmlhttp.ontimeout = function (e) {
@@ -81,7 +89,7 @@ function init_page(){
 }
 
 function sign_out() {
-    token = localStorage.getItem("token");
+    let token = localStorage.getItem("token");
     make_http_request('POST', HOST_URL+'/sign_out', {"token":token}, load_sign_out)
 }
 
@@ -91,7 +99,7 @@ function load_sign_out(response){
         return;
     }
     localStorage.removeItem("token");
-    window.location.reload();
+    replace_html(HOST_URL+"/get_file/Frontend/Login_pages/index.html");
 }
 
 function open_tab(tab_name){
@@ -111,6 +119,9 @@ function open_tab(tab_name){
         }
     }
     localStorage.setItem("tab",tab_name);
+    if (!document.getElementById(tab_name+"_tab")){
+        return;
+    }
     document.getElementById(tab_name+"_tab").classList.remove("clickable");
     document.getElementById(tab_name+"_tab").classList.add("selected");
     if (document.getElementById("projects_tab") && !["home","about"].includes(tab_name)) {

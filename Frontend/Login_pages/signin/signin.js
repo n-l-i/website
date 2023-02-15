@@ -22,7 +22,7 @@ function load_sign_in(response){
         return;
     }
     localStorage.setItem("token",response.data);
-    window.location.reload();
+    replace_html(HOST_URL+"/get_file/Frontend/Content_pages/index.html");
 }
 
 function sign_up() {
