@@ -3,6 +3,15 @@ window.onload = function(){
     make_http_request("POST", HOST_URL+'/is_signed_in', {"token":token}, open_start_tab);
 }
 
+window.onresize = function(){
+    if (!localStorage.getItem("tab")) {
+        return;
+    }
+    if (localStorage.getItem("tab") == "chess_ai") {
+        chess_ai_adjust_layout();
+    }
+}
+
 function open_start_tab(response){
     if (response.status_code !== 200 || response.success !== true || response.data !== true) {
         replace_html(HOST_URL+"/get_file/Frontend/Login_pages/index.html");

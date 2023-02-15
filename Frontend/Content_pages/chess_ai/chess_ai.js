@@ -1,5 +1,5 @@
 function load_chess_ai(){
-    adjust_layout();
+    chess_ai_adjust_layout();
     localStorage.setItem("selected_tiles","");
     localStorage.setItem("targeted_tiles","");
     localStorage.setItem("turn",null);
@@ -20,11 +20,9 @@ function load_chess_ai(){
     check_colour();
 }
 
-window.onresize = adjust_layout;
-
 previous_display_board_response = null;
 
-function adjust_layout() {
+function chess_ai_adjust_layout() {
     let move_stack = null;
     if (document.getElementById("move_stack")) {
         move_stack = document.getElementById("move_stack").innerHTML;
