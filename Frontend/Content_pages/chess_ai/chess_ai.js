@@ -39,6 +39,7 @@ function adjust_layout() {
         document.getElementById("move_stack").innerHTML = move_stack;
     }
     if (previous_display_board_response) {
+        previous_display_board_response.timestamp = Date.now();
         display_board(previous_display_board_response);
     }
 }
