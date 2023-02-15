@@ -5,7 +5,7 @@
     <div class="item item--fill container container--visible container--col">
         <p>Select game mode:</p>
         <div class="item container container--row">
-            <select id="mode_input" name="mode" onchange="check_mode();return false;">
+            <select id="mode_input" class="input input--fit_content clickable" name="mode" onchange="check_mode();return false;">
                 <option value="ai_vs_human">AI vs Human</option>
                 <option value="human_vs_human">Human vs Human</option>
                 <option value="ai_vs_ai">AI vs AI</option>
@@ -16,7 +16,7 @@
     <div class="item item--fill container container--visible container--col">
         <p>Select colour:</p>
         <div class="item  container container--row">
-            <select id="colour_input" name="colour" onchange="check_colour();return false;">
+            <select id="colour_input" class="input input--fit_content clickable" name="colour" onchange="check_colour();return false;">
                 <option value="white">White</option>
                 <option value="black">Black</option>
             </select>
@@ -26,7 +26,7 @@
     <div class="item item--fill container container--visible container--col">
         <p>Select the number<br>of seconds the<br>AI thinks for:</p>
         <div class="item  container container--row">
-            <input id="thinktime_input" type="number" min="0" max="60" step="0.5" value="5" onchange="check_thinktime();return false;">
+            <input id="thinktime_input" class="input input--fit_content clickable" type="number" min="0" max="60" step="0.5" value="5" onchange="check_thinktime();return false;">
             <input id="thinktime_button" class="button clickable" type="button" value="Send" onclick="select_thinktime();return false;">
         </div>
     </div>
@@ -52,7 +52,7 @@
 
 <script id="vertical_layout" type="text/html">
     <div class="item item--fill container container--col container--dropdown overflow-visible">
-        <div class="item item--fill container container--visible container__dropdown_header container__dropdown_header--hover">Settings</div>
+        <div class="item item--fill container container--visible container--tab container__dropdown_header container__dropdown_header--hover">Settings</div>
         <div id="chess_menu" class="item item--big item--fill container container--visible container--col container__dropdown_content"></div>
     </div>
     <div id="chess_ai" class="item item--big item--fill container container--col container--visible container--chess_board"></div>
