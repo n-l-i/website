@@ -158,6 +158,9 @@ function set_reference_time(response){
 }
 
 function update_time_display(){
+    if (!document.getElementById("current_date")) {
+        return;
+    }
     const server_time_diff = parseInt(localStorage.getItem("server_time_diff"));
     const timeElapsed = Date.now()+server_time_diff;
     const today = new Date(timeElapsed);
