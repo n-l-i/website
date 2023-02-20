@@ -9,6 +9,11 @@ function sign_in() {
         show_status_message("Wrong email or password.");
         return;
     }
+    document.getElementById("signup_button").classList.remove("clickable");
+    document.getElementById("signup_button").disabled = true;
+    document.getElementById("signin_button").value = "Processing...";
+    document.getElementById("signin_button").classList.remove("clickable");
+    document.getElementById("signin_button").disabled = true;
     hash(password,document.URL+email).then((password_hash) => {
         let data = {"username":email,
                     "password":password_hash};
@@ -19,6 +24,11 @@ function sign_in() {
 function load_sign_in(response){
     if (response.status_code !== 200 || response.success !== true) {
         show_status_message(response.message);
+        document.getElementById("signup_button").classList.add("clickable");
+        document.getElementById("signup_button").disabled = false;
+        document.getElementById("signin_button").value = "Sign in";
+        document.getElementById("signin_button").classList.add("clickable");
+        document.getElementById("signin_button").disabled = false;
         return;
     }
     localStorage.setItem("token",response.data);
@@ -50,6 +60,11 @@ function sign_up() {
         show_status_message("The name of this fruit is too long.");
         return;
     }
+    document.getElementById("signup_button").value = "Processing...";
+    document.getElementById("signup_button").classList.remove("clickable");
+    document.getElementById("signup_button").disabled = true;
+    document.getElementById("signin_button").classList.remove("clickable");
+    document.getElementById("signin_button").disabled = true;
     hash(password,document.URL+email).then((password_hash) => {
         let data = {"username":email,
                     "password":password_hash,
@@ -59,6 +74,11 @@ function sign_up() {
 }
 
 function load_sign_up(response){
+    document.getElementById("signup_button").value = "Sign up";
+    document.getElementById("signup_button").classList.add("clickable");
+    document.getElementById("signup_button").disabled = false;
+    document.getElementById("signin_button").classList.add("clickable");
+    document.getElementById("signin_button").disabled = false;
     if (response.status_code !== 200 || response.success !== true) {
         show_status_message(response.message);
         return;
