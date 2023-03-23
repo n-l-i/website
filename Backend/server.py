@@ -178,7 +178,8 @@ def get_file(file_path):
 @app.route("/get_tab", methods = ["POST"])
 def get_tab():
     tab = str(request.get_json().get("tab"))
-    if tab not in ("about","signin","home","chess_ai","spbmap","network_simulator","ssl_certs"):
+    if tab not in ("about","signin","home","chess_ai","security_architecture",
+                   "network_simulator","ssl_certs"):
         return make_response({}, 400)
     token = request.get_json().get("token")
     if _is_valid(token)[1] != 200:

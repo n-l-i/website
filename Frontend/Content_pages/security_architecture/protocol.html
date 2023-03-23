@@ -1,0 +1,166 @@
+<h2>Authentication Protocol and security architecture</h2>
+<ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#ksf">KSF</a></li>
+    <li><a href="#kdf">KDF</a></li>
+    <li><a href="#ae">AE</a></li>
+    <li><a href="#ake">AKE</a></li>
+    <li><a href="#protocol">Full authentication protocol</a>
+    <ul>
+        <li><a href="#protocol-registration">Registration</a></li>
+        <li><a href="#protocol-authentication">Authentication</a></li>
+        <li><a href="#protocol-definitions">Definitions</a></li>
+    </ul>
+    </li>
+    <li><a href="#references">References</a></li>
+</ul>
+
+<h2><a name="overview"></a>Overview</h2>
+<ul>
+    <li>Key Stretching Function (KSF) - Used to turn a low entropy key, such as
+    a password, into a higher entropy key.</li>
+    <li>Key Derivation Function (KDF) - Used to turn a high entropy key into
+    keys usable in various cryptographic functions.</li>
+    <li>Authenticated Encryption (AE) - Used to encrypt data in a way that
+    ensures both data confidentiality and data authenticity.</li>
+    <li>Authenticated Key Exchange (AKE) - Used to exchange a secret key between
+    two parties while letting both parties authenticate each other.</li>
+</ul>
+
+<h2><a name="ksf"></a>KSF(input, salt)</h2>
+<div>
+    <p>The KSF function chosen is <b>PBKDF2</b>,<br>
+    with HMAC-SHA512 as the underlying hash function, iteration count set to
+    one million, and an output size of 512 bits.<br>
+    <br>
+    PBKDF2 is an old and widely used key derivation function for passwords,
+    designed to increase the amount of resources needed to calculate a password
+    hash. These resources are often processing power and memory access. There
+    are better and more modern algorithms available today, but PBKDF2 is still
+    considered to be somewhat secure [<a href="KSF1">KSF1</a>]. It is chosen since it is the only
+    key derivation function in the Web Crypto API suitable for passwords, and
+    when it comes to cryptography it's better to use a strong implementation of
+    a weaker algorithm than to use a weak implementation of a stronger
+    algorithm. Following current recommendations [<a href="KSF2">KSF2</a>], the iteration count is
+    set to a million.</p>
+</div>
+
+<h2><a name="kdf"></a>KDF(input, info, output_length)</h2>
+<div>
+    <p>The KDF function chosen is <b>HKDF</b>,<br>
+    with SHA512 as the underlying hash function.<br>
+    <br>
+    HKDF is a widely used secure key derivation function [<a href="KDF1">KDF1</a>].</p>
+</div>
+
+<h2><a name="ae"></a>AE(key, data, iv)</h2>
+<div>
+    <p>The AE algorithm chosen is <b>GCM</b>,<br>
+    with AES as the underlying encryption function, and additional data
+    consisting of the user id and timestamp.<br>
+    <br>
+    GCM is a widely used authenticated encryption algorithm that is secure when
+    used properly [<a href="AE1">AE1</a>]. It is used with AES as the underlying encryption
+    algorithm which is proven secure and is the standard in the industry
+    [<a href="AE2">AE2</a>].</p>
+</div>
+
+<h2><a name="ake"></a>AKE</h2>
+<div>
+    <p>The AKE protocol chosen is <b>3DH</b>,<br>
+    based on the design outlined by Kudla and Paterson [<a href="AKE1">AKE1</a>].<br>
+    <br>
+    Some changes to the protocol are made:</p>
+    <ul>
+        <li>ECDH is used in place of regular DH.</li>
+        <li>The server registers the user public key on sign up, and the user
+        generates a second private key to encrypt the server public key and
+        store it on the server.</li>
+    </ul>
+    <p>The full authentication protocol is described in further detail below.</p>
+</div>
+
+<h2><a name="protocol"></a>Full authentication protocol</h2>
+<div>
+    <p><a name="protocol-registration"></a>Registration:</p>
+    <ol>
+        <li>Client -> Server: {user_id}</li>
+        <li>Server: generate server_private_key, calculate
+        server_public_key</li>
+        <li>Server -> Client: {server_public_key}</li>
+        <li>Client: calculate client_private_key, client_public_key, and
+        client_authentication_key</li>
+        <li>Client: encrypt server_public_key with
+        client_authentication_key</li>
+        <li>Client -> Server: {user_id, client_public_key,
+        server_public_key_ciphertext}</li>
+        <li>Server: store server_private_key, server_public_key_ciphertext, and
+        client_public_key</li>
+    </ol>
+    <p><a name="protocol-authentication"></a>Authentication:</p>
+    <ol>
+        <li>Client: generate client_private_session_key, calculate
+        client_public_session_key</li>
+        <li>Client -> Server: {user_id, client_public_session_key}</li>
+        <li>Server: generate server_private_session_key, calculate
+        server_public_session_key</li>
+        <li>Server: calculate session_key and server_authorisation_message</li>
+        <li>Server -> Client: {server_public_key_ciphertext,
+        server_public_session_key, server_authorisation_message}</li>
+        <li>Client: calculate client_private_key and
+        client_authentication_key</li>
+        <li>Client: decrypt server_public_key_ciphertext and calculate
+        session_key</li>
+        <li>Client: validate server_authorisation_message and calculate
+        client_authorisation_message</li>
+        <li>Client -> Server: {user_id, client_authorisation_message}</li>
+        <li>Server: validate client_authorisation_message</li>
+    </ol>
+    <p><a name="protocol-definitions"></a>Definitions:</p>
+    <ul>
+        <li>user_id = (<b>text string</b>) The username of the user</li>
+        <li>website_url = (<b>text string</b>) The root URL of the website</li>
+        <li>password = (<b>text string</b>) The user password</li>
+        <li>client_key_material = (<b>byte string</b>) <b>KSF(password,
+        salt=username || website_url)</b></li>
+        <li>client_private_key = (<b>byte string</b>)
+        <b>KDF(client_key_material, "private_key")</b></li>
+        <li>client_public_key = (<b>byte string</b>) EC public key derived from
+        <b>client_private_key</b></li>
+        <li>client_authentication_key = (<b>byte string</b>)
+        <b>KDF(client_key_material, "authentication_key")</b></li>
+        <li>server_private_key = (<b>byte string</b>) Random number
+        (persistent)</li>
+        <li>server_public_key = (<b>byte string</b>) EC public key derived from
+        <b>server_private_key</b></li>
+        <li>server_public_key_ciphertext = (<b>byte string</b>)
+        <b>AE(client_authentication_key, server_public_key,
+        <i>random number</i>)</b></li>
+        <li>client_private_session_key = (<b>byte string</b>) Random number</li>
+        <li>client_public_session_key = (<b>byte string</b>) EC public key
+        derived from <b>client_private_session_key</b></li>
+        <li>server_private_session_key = (<b>byte string</b>) Random number</li>
+        <li>server_public_session_key = (<b>byte string</b>) EC public key
+        derived from <b>server_private_session_key</b></li>
+        <li>shared_secret = (<b>byte string</b>) The shared secret derived from
+        the AKE protocol.</li>
+        <li>session_key = (<b>byte string</b>) <b>KDF(shared_secret,
+        "session_key")</b></li>
+        <li>server_authorisation_message = (<b>byte string</b>)
+        <b>AE(client_authentication_key, client_public_session_key ||
+        server_public_session_key, random number)</b></li>
+        <li>client_authorisation_message = (<b>byte string</b>)
+        <b>AE(client_authentication_key, server_public_session_key ||
+        client_public_session_key, random number)</b></li>
+    </ul>
+</div>
+
+<h2><a name="references"></a>References</h2>
+<ul>
+    <li><a name="KSF1"></a>KSF1: <a href="https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=79">https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=79</a></li>
+    <li><a name="KSF2"></a>KSF2: <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2">https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2</a></li>
+    <li><a name="KDF1"></a>KDF1: <a href="https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=71">https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=71</a></li>
+    <li><a name="AE1"></a>AE1: <a href="https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=62">https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=62</a></li>
+    <li><a name="AE2"></a>AE2: <a href="https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=46">https://www.ecrypt.eu.org/csa/documents/D5.4-FinalAlgKeySizeProt.pdf#page=46</a></li>
+    <li><a name="AKE1"></a>AKE1: <a href="https://link.springer.com/content/pdf/10.1007/11593447_30.pdf#page=12">https://link.springer.com/content/pdf/10.1007/11593447_30.pdf#page=12</a></li>
+</ul>
