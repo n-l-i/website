@@ -39,11 +39,11 @@ fi
     touch Log/successful_requests.txt
 
     if [[ ! -z "$(command -v apt)" ]]; then
-        [[ -z "$(command -v curl)" ]] && sudo apt install curl
-        [[ -z "$(command -v python3)" ]] && sudo apt install python3
+        [[ -z "$(command -v curl)" ]] && sudo apt -y install curl
+        [[ -z "$(command -v python3)" ]] && sudo apt -y install python3
     elif [[ ! -z "$(command -v yum)" ]]; then
-        [[ -z "$(command -v curl)" ]] && sudo yum install curl
-        [[ -z "$(command -v python3)" ]] && sudo yum install python3
+        [[ -z "$(command -v curl)" ]] && sudo yum -y install curl
+        [[ -z "$(command -v python3)" ]] && sudo yum -y install python3
     else
         exit 1
     fi
@@ -65,8 +65,8 @@ fi
         python3 -m pip install gunicorn
         if [[ -z "$(command -v nginx)" ]]; then
             deactivate
-            [[ ! -z "$(command -v apt)" ]] && sudo apt install nginx
-            [[ ! -z "$(command -v yum)" ]] && sudo amazon-linux-extras install "$(amazon-linux-extras | grep nginx | sed 's/.*nginx/nginx/' | sed 's/ .*//')"
+            [[ ! -z "$(command -v apt)" ]] && sudo apt -y install nginx
+            [[ ! -z "$(command -v yum)" ]] && yes | sudo amazon-linux-extras install "$(amazon-linux-extras | grep nginx | sed 's/.*nginx/nginx/' | sed 's/ .*//')"
             [[ -z "$(command -v apt)" && -z "$(command -v yum)" ]] && exit 1
             source Deployment/venv/bin/activate
         fi
